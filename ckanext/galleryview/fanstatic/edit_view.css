@@ -1,0 +1,13 @@
+* {
+  .border-radius(0) !important;
+}
+
+#field {
+    margin-bottom:20px;
+}
+
+input.input {
+    margin-right:1%;
+    width:40%;
+    float:left;
+}

@@ -1,0 +1,42 @@
+{% resource 'galleryview/gallery.css' %}
+{% resource 'galleryview/gallery.js' %}
+
+<div class="gallery">
+    <div class="container">
+        <div class="row">
+        {% for image in images %}
+            <div class="col-xs-3 gallery-item" width="200">
+                <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
+                    <img src="{{ image }}" class="img-responsive img-gallery" alt="">
+                </a>
+                <a target="_blank" href="{{ image }}">
+                    <p class="imagename">{{ image_names[loop.index-1] }}</p>
+                </a>
+            </div>
+        {% endfor %}
+        </div> <!--/.row  -->
+    </div> <!-- /.container -->
+</div>
+
+<div class="modal fade" id="modalGallery" tabindex="-1" role="dialog" aria-labelledby="modalGalleryLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title" id="modalGalleryLabel">Gallery</h4>
+			</div> <!-- /.modal-header -->
+
+			<div class="modal-body">
+				<div id="carouselGallery" class="carousel slide" data-ride="carousel" data-interval="false">
+					<div class="carousel-inner">
+					</div> <!-- /.carousel-inner -->
+				</div> <!-- /.carousel -->
+			</div> <!-- /.modal-body -->
+
+			<div class="modal-footer">
+				<ul class="pagination">
+				</ul>
+			</div> <!-- /.modal-footer -->
+		</div> <!-- /.modal-content -->
+	</div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
