@@ -2,8 +2,7 @@
 {% resource 'galleryview/create_input.js' %}
 
 <div>
-	<input type="hidden"/>
-    <div class="control-group" id="fields">
+    <div class="control-group">
         <label class="control-label" for="field1">{{ _('Image url') }}</label>
 		<div class="controls" id="profs">
             <form class="input-append">
@@ -12,23 +11,22 @@
 					 and when clicking the add button, it calls the create_input.js and creates additional inputs-->
 					{% set link = '' %}
 					{% set name = '' %}
-					{% if fields|length > 0 %}
-						{% set link = fields[0] %}
-						{% set name = data.image_names[0] %}
+					{% if urls|length > 0 %}
+						{% set link = urls[0] %}
+						{% set name = imgs[0] %}
 					{% endif %}
 					<input autocomplete="off" class="input" id="field1" name="fields" type="text" placeholder="link eg. http://example.com/image.jpg" value="{{ link }}" />
 					<input autocomplete="off" class="input" id="image_name1" name="image_names" type="text" placeholder="name of the image" value="{{ name }}"/>
 					<button id="addbtn" data-module="create_input" data-module-field="button" class="btn btn-success" type="button">+</button>
 				</div>
             </form>
-        <small>Press + to add another image url</small>
         </div>
     </div>
-</div>
+
 <!--inserting all urls that are already stored (by calling the create_input.js each time)
 except for the first stored url because it was already inserted above-->
-{% for field in fields %}
+{% for field in urls %}
 	{% if loop.index != 1 %}
-		<input type="text" disabled="disabled" style="display: none;" data-module="create_input" data-module-field="{{ field }}" data-module-imagename="{{ data.image_names[loop.index-1] }}"></input>
+		<input type="text" disabled="disabled" style="display: none;" data-module="create_input" data-module-field="{{ field }}" data-module-imagename="{{ imgs[loop.index-1] }}"></input>
 	{% endif %}
 {% endfor %}

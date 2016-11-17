@@ -30,7 +30,7 @@ ckan.module('create_input', function ($, _) {
             $("#field").append($('<div id="br2"></br></div>'));
         }
 
-        var newInput = $('<input autocomplete="off" class="input" id="field' + next + '" name="fields" type="text" placeholder="link eg. http://example.com/image.jpg" value="' + field + '">');
+        var newInput = $('<input autocomplete="off" class="input form-control" id="field' + next + '" name="fields" type="text" placeholder="link eg. http://example.com/image.jpg" value="' + field + '">');
         var newInputImageName = $('<input autocomplete="off" class="input" id="image_name' + next + '" name="image_names" type="text" placeholder="name of the image" value="' + imagename + '"/>');
         var removeButton = $('<button id="remove-' + next + '" class="btn btn-danger remove-me" >-</button></div><div id="field">');
 
