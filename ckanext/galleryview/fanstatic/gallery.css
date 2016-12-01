@@ -5,8 +5,18 @@
 .gallery-item{
 	margin-bottom: 30px;
     width: 300px;
-    height: 150px;
+    max-height: 150px;
     display: inline-block;
+}
+/* Responsive images (ensure images don't scale beyond their parents) */
+.gallery-item img{
+    max-width: 80%;
+}
+.imagename {
+    overflow: hidden;
+    display: block;
+    text-overflow:ellipsis;
+    max-width: 80%;
 }
 .modal-footer{
 	text-align: center;
