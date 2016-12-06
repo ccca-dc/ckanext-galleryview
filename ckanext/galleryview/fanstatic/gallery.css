@@ -4,18 +4,14 @@
 }
 .gallery-item{
 	margin-bottom: 30px;
-    width: 300px;
-    max-height: 150px;
     display: inline-block;
+    width: 300px;
+}
+.link-gallery{
+    max-height: 100px;
 }
 /* Responsive images (ensure images don't scale beyond their parents) */
 .gallery-item img{
-    max-width: 80%;
-}
-.imagename {
-    overflow: hidden;
-    display: block;
-    text-overflow:ellipsis;
     max-width: 80%;
 }
 .modal-footer{
@@ -35,4 +31,8 @@ a:hover {
 .imagename{
     font-weight: bold;
     color: black;
+    overflow: hidden;
+    display: block;
+    text-overflow:ellipsis;
+    max-width: 80%;
 }

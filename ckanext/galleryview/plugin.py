@@ -21,13 +21,12 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
         toolkit.add_resource('fanstatic', 'galleryview')
 
     def info(self):
-        return {'name': 'gallery_view',
+        return {'name': 'galleryview',
                 'title': plugins.toolkit._('Gallery'),
                 'icon': 'picture',
                 'schema': {
-                    'fields': [],
-                    'image_names': [],
-                    'i_url': [ignore_empty],
+                    'fields': [ignore_empty],
+                    'image_names': [ignore_empty]
                     },
                 'iframed': False,
                 'always_available': True,
