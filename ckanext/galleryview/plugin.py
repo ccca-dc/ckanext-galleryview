@@ -51,18 +51,9 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
         fields = data_dict['resource_view'].get('fields', '')
         image_names = data_dict['resource_view'].get('image_names', '')
 
-        fieldoutput = []
-        imgs = []
-        if type(fields) is list:
-            fieldoutput = list(filter(None, fields))
-            imgs = list(filter(None, image_names))
-        else:
-            fieldoutput.append(fields)
-            imgs.append(image_names)
-
         tpl_variables = {
-            'urls': fieldoutput,
-            'imgs': imgs
+            'urls': fields,
+            'imgs': image_names
         }
 
         return tpl_variables

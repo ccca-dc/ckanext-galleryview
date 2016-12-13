@@ -9,9 +9,13 @@
                 <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
                     <img src="{{ image }}" class="img-responsive img-gallery" alt="">
                 </a>
-                <a target="_blank" href="{{ image }}">
+                {% if image.startswith('http') %}
+                    <a target="_blank" href="{{ image }}">
+                        <p class="imagename">{{ image_names[loop.index-1] }}</p>
+                    </a>
+                {% else %}
                     <p class="imagename">{{ image_names[loop.index-1] }}</p>
-                </a>
+                {% endif %}
             </div>
         {% endfor %}
         </div> <!--/.row  -->
