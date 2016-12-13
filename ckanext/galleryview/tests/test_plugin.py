@@ -105,7 +105,6 @@ class TestGalleryViewHtml(helpers.FunctionalTestBase):
     def setup_class(cls):
 
         super(TestGalleryViewHtml, cls).setup_class()
-        config['ckan.views.default_views'] = ('')
 
         ckan.plugins.load('galleryview')
 
@@ -115,11 +114,10 @@ class TestGalleryViewHtml(helpers.FunctionalTestBase):
 
         super(TestGalleryViewHtml, cls).teardown_class()
 
-        # model.repo.rebuild_db()
         helpers.reset_db()
 
     def test_gallery_view(self):
-        app = helpers._get_test_app()
+        app = self._get_test_app()
 
         dataset = factories.Dataset()
         resource = factories.Resource(package_id=dataset['id'])
@@ -130,12 +128,12 @@ class TestGalleryViewHtml(helpers.FunctionalTestBase):
                    'user': sysadmin['name']}
 
         resource_view_dict = {'resource_id': resource['id'],
-                                  'view_type': 'galleryview',
-                                  'title': 'Gallery Test View',
-                                  'description': 'A nice test view',
-                                  'fields': ['http://some.image.png',
-                                             'another.image'],
-                                  'image_names': ['some', 'another']}
+                              'view_type': 'galleryview',
+                              'title': 'Gallery Test View',
+                              'description': 'A nice test view',
+                              'fields': ['http://some.image.png',
+                                         'another.image'],
+                              'image_names': ['some', 'another']}
 
         resource_view = helpers.call_action('resource_view_create', context,
                                             **resource_view_dict)
