@@ -33,7 +33,9 @@ class TestGalleryView(object):
         '''Nose runs this method once to setup our test class.'''
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
-        cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
+        config['ckan.views.default_views'] = ('')
+        app = ckan.config.middleware.make_app(config['global_conf'], **config)
+        cls.app = paste.fixture.TestApp(app)
 
         ckan.plugins.load('galleryview')
 
@@ -65,7 +67,6 @@ class TestGalleryView(object):
         model.repo.rebuild_db()
         ckan.plugins.unload('galleryview')
 
-    @helpers.change_config('ckan.views.default_views', '')
     def test_view_shown_in_resource_view_list(self):
         resource_view_list = tests.call_action_api(self.app,
                                                    'resource_view_list',
@@ -107,6 +108,27 @@ class TestGalleryView(object):
 
         with assert_raises(KeyError):
             resource_view_show['fields']
+
+    def test_view_update(self):
+        resource_view_dict = {'resource_id': self.resource['id'],
+                              'view_type': 'galleryview',
+                              'title': 'Gallery Test View',
+                              'description': 'A nice test view',
+                              'fields': ['http://some.image.png', 'another.image', 'http://test.image.png'],
+                              'image_names': ['some', 'another', 'test image']}
+
+        tests.call_action_api(self.app,
+                              'resource_view_update',
+                              id=self.resource_view['id'],
+                              apikey=self.sysadmin['apikey'],
+                                              **resource_view_dict)
+
+        url = url_for(controller='package', action='resource_read',
+                      id=self.dataset['name'], resource_id=self.resource['id'])
+        response = self.app.get(url)
+
+        assert_true(self.resource_view_dict['fields'][3] not in response)
+        assert_true(resource_view_dict['fields'][2] in response)
 
     def test_gallery_view_html(self):
         url = url_for(controller='package', action='resource_read',
