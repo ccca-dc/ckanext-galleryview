@@ -16,6 +16,7 @@ import logging
 
 import ckan.model as model
 import ckan.tests.legacy as tests
+from ckan.tests.legacy import WsgiAppCase
 import ckan.plugins
 import ckan.logic as logic
 from ckan.common import config
@@ -32,26 +33,27 @@ class TestGalleryView(object):
         '''Nose runs this method once to setup our test class.'''
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
+        cls.app = paste.fixture.TestApp(pylons.test.pylonsapp)
+
         ckan.plugins.load('galleryview')
 
-        dataset = factories.Dataset()
-        cls.resource = factories.Resource(package_id=dataset['id'])
-        sysadmin = factories.Sysadmin()
+        cls.dataset = factories.Dataset()
+        cls.resource = factories.Resource(package_id=cls.dataset['id'])
+        cls.sysadmin = factories.Sysadmin()
 
         cls.context = {'model': model,
                        'session': model.Session,
-                       'user': sysadmin['name']}
+                       'user': cls.sysadmin['name']}
 
         cls.resource_view_dict = {'resource_id': cls.resource['id'],
                                   'view_type': 'galleryview',
                                   'title': 'Gallery Test View',
                                   'description': 'A nice test view',
-                                  'fields': ['http://some.image.png', 'http://another.png'],
-                                  'image_names': ['some', 'another']}
+                                  'fields': ['http://some.image.png', 'another.image', '', 'http://different.image.png'],
+                                  'image_names': ['some', 'another', 'test image', '']}
 
         cls.resource_view = ckan.plugins.toolkit.get_action('resource_view_create')(
             cls.context, cls.resource_view_dict)
-
 
     @classmethod
     def teardown_class(cls):
@@ -65,21 +67,25 @@ class TestGalleryView(object):
 
     @helpers.change_config('ckan.views.default_views', '')
     def test_view_shown_in_resource_view_list(self):
-        resource_view_list = ckan.plugins.toolkit.get_action('resource_view_list')(
-            self.context, {'id': self.resource['id']})
+        resource_view_list = tests.call_action_api(self.app,
+                                                   'resource_view_list',
+                                                   id=self.resource['id'],
+                                                   apikey=self.sysadmin['apikey'])
 
         assert_equal(len(resource_view_list), 1)
         assert_equal(resource_view_list[0]['view_type'], 'galleryview')
 
     def test_all_fields_saved(self):
-        resource_view_show = ckan.plugins.toolkit.get_action('resource_view_show')(
-            self.context, {'id': self.resource_view['id']})
+        resource_view = tests.call_action_api(self.app,
+                                              'resource_view_show',
+                                              id=self.resource_view['id'],
+                                              apikey=self.sysadmin['apikey'])
 
         assert_equal(self.resource_view_dict['fields'],
-                     resource_view_show['fields'])
-        assert_equal(resource_view_show['title'], 'Gallery Test View')
-        assert_equal(resource_view_show['description'], 'A nice test view')
-        assert_equal(resource_view_show['view_type'], 'galleryview')
+                     resource_view['fields'])
+        assert_equal(resource_view['title'], 'Gallery Test View')
+        assert_equal(resource_view['description'], 'A nice test view')
+        assert_equal(resource_view['view_type'], 'galleryview')
 
     def test_view_with_no_image_url(self):
         resource_view_dict = {'resource_id': self.resource['id'],
@@ -89,66 +95,33 @@ class TestGalleryView(object):
                                   'fields': '',
                                   'image_names': ''}
 
-        resource_view = ckan.plugins.toolkit.get_action('resource_view_create')(
-            self.context, resource_view_dict)
+        resource_view = tests.call_action_api(self.app,
+                                              'resource_view_create',
+                                              apikey=self.sysadmin['apikey'],
+                                              **resource_view_dict)
 
-        resource_view_show = ckan.plugins.toolkit.get_action('resource_view_show')(
-            self.context, {'id': resource_view['id']})
+        resource_view_show = tests.call_action_api(self.app,
+                                                   'resource_view_show',
+                                                   id=resource_view['id'],
+                                                   apikey=self.sysadmin['apikey'])
 
         with assert_raises(KeyError):
             resource_view_show['fields']
 
-
-class TestGalleryViewHtml(helpers.FunctionalTestBase):
-
-    @classmethod
-    def setup_class(cls):
-
-        super(TestGalleryViewHtml, cls).setup_class()
-
-        ckan.plugins.load('galleryview')
-
-    @classmethod
-    def teardown_class(cls):
-        ckan.plugins.unload('galleryview')
-
-        super(TestGalleryViewHtml, cls).teardown_class()
-
-        helpers.reset_db()
-
-    def test_gallery_view(self):
-        app = self._get_test_app()
-
-        dataset = factories.Dataset()
-        resource = factories.Resource(package_id=dataset['id'])
-        sysadmin = factories.Sysadmin()
-
-        context = {'model': model,
-                   'session': model.Session,
-                   'user': sysadmin['name']}
-
-        resource_view_dict = {'resource_id': resource['id'],
-                              'view_type': 'galleryview',
-                              'title': 'Gallery Test View',
-                              'description': 'A nice test view',
-                              'fields': ['http://some.image.png',
-                                         'another.image'],
-                              'image_names': ['some', 'another']}
-
-        resource_view = helpers.call_action('resource_view_create', context,
-                                            **resource_view_dict)
-
+    def test_gallery_view_html(self):
         url = url_for(controller='package', action='resource_read',
-                      id=dataset['name'], resource_id=resource['id'])
-        response = app.get(url)
+                      id=self.dataset['name'], resource_id=self.resource['id'])
+        response = self.app.get(url)
 
-        assert_true(resource_view_dict['fields'][0] in response)
-        assert_true(resource_view_dict['image_names'][0] in response)
-        assert_true(resource_view_dict['fields'][1] in response)
+        assert_true(self.resource_view_dict['fields'][0] in response)
+        assert_true(self.resource_view_dict['image_names'][0] in response)
+        assert_true(self.resource_view_dict['fields'][1] in response)
+        assert_true(self.resource_view_dict['fields'][3] in response)
+        assert_true(self.resource_view_dict['fields'][2] in response)
 
         url = url_for(controller='package', action='edit_view',
-                      id=dataset['name'], resource_id=resource['id'],
-                      view_id=resource_view['id'])
+                      id=self.dataset['name'], resource_id=self.resource['id'],
+                      view_id=self.resource_view['id'])
 
         # response = app.get(url)
         # log.debug(response)
