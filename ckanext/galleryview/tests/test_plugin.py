@@ -48,7 +48,7 @@ class TestGalleryView(object):
                        'user': cls.sysadmin['name']}
 
         cls.resource_view_dict = {'resource_id': cls.resource['id'],
-                                  'view_type': 'galleryview',
+                                  'view_type': 'gallery_view',
                                   'title': 'Gallery Test View',
                                   'description': 'A nice test view',
                                   'fields': ['http://some.image.png', 'another.image', '', 'http://different.image.png'],
@@ -74,7 +74,7 @@ class TestGalleryView(object):
                                                    apikey=self.sysadmin['apikey'])
 
         assert_equal(len(resource_view_list), 1)
-        assert_equal(resource_view_list[0]['view_type'], 'galleryview')
+        assert_equal(resource_view_list[0]['view_type'], 'gallery_view')
 
     def test_all_fields_saved(self):
         resource_view = tests.call_action_api(self.app,
@@ -86,11 +86,11 @@ class TestGalleryView(object):
                      resource_view['fields'])
         assert_equal(resource_view['title'], 'Gallery Test View')
         assert_equal(resource_view['description'], 'A nice test view')
-        assert_equal(resource_view['view_type'], 'galleryview')
+        assert_equal(resource_view['view_type'], 'gallery_view')
 
     def test_view_with_no_image_url(self):
         resource_view_dict = {'resource_id': self.resource['id'],
-                                  'view_type': 'galleryview',
+                                  'view_type': 'gallery_view',
                                   'title': 'Test View',
                                   'description': 'A nice test view',
                                   'fields': '',
@@ -111,7 +111,7 @@ class TestGalleryView(object):
 
     def test_view_update(self):
         resource_view_dict = {'resource_id': self.resource['id'],
-                              'view_type': 'galleryview',
+                              'view_type': 'gallery_view',
                               'title': 'Gallery Test View',
                               'description': 'A nice test view',
                               'fields': ['http://some.image.png', 'another.image', 'http://test.image.png'],

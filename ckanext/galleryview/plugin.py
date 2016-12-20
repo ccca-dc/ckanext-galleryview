@@ -21,7 +21,7 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
         toolkit.add_resource('fanstatic', 'galleryview')
 
     def info(self):
-        return {'name': 'galleryview',
+        return {'name': 'gallery_view',
                 'title': plugins.toolkit._('Gallery'),
                 'icon': 'picture',
                 'schema': {
