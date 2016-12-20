@@ -1,57 +1,29 @@
-.. You should enable this project on travis-ci.org and coveralls.io to make
-   these badges work. The necessary Travis and Coverage config files have been
-   generated for you.
-
-.. image:: https://travis-ci.org/KatharinaSack/ckanext-galleryview.svg?branch=master
-    :target: https://travis-ci.org/KatharinaSack/ckanext-galleryview
-
-.. image:: https://coveralls.io/repos/KatharinaSack/ckanext-galleryview/badge.svg
-  :target: https://coveralls.io/r/KatharinaSack/ckanext-galleryview
-
-.. image:: https://pypip.in/download/ckanext-galleryview/badge.svg
-    :target: https://pypi.python.org/pypi//ckanext-galleryview/
-    :alt: Downloads
-
-.. image:: https://pypip.in/version/ckanext-galleryview/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-galleryview/
-    :alt: Latest Version
-
-.. image:: https://pypip.in/py_versions/ckanext-galleryview/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-galleryview/
-    :alt: Supported Python versions
-
-.. image:: https://pypip.in/status/ckanext-galleryview/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-galleryview/
-    :alt: Development Status
-
-.. image:: https://pypip.in/license/ckanext-galleryview/badge.svg
-    :target: https://pypi.python.org/pypi/ckanext-galleryview/
-    :alt: License
-
-=============
 ckanext-galleryview
 =============
 
-.. Put a description of your extension here:
-   What does it do? What features does it have?
-   Consider including some screenshots or embedding a video!
+![Gallery View](doc/img/gallery_view.png)
 
+This extension creates a resource view and lets you add a gallery to any
+resource you have pictures for. Therefore you you can add pictures to a
+resource without having them uploaded as resource.
 
-------------
-Requirements
-------------
+Currently the gallery view can only add URLs like the default image_view from
+CKAN. However it is planned to implement uploading pictures in a later version.
 
-For example, you might want to mention here which versions of CKAN this
-extension works with.
+![Gallery View](doc/img/gallery_form.png)
 
+As seen in the edit view picture above, you can add as many pictures as you
+want. You can give each picture a name which is then put underneath the picture
+in the gallery view (picture one).
+
+The name of the picture is a link to the original picture.
+When the picture itself in the gallery is clicked, the following opens:
+
+![Gallery View](doc/img/picture_zoom.png)
 
 ------------
 Installation
 ------------
-
-.. Add any additional install steps to the list below.
-   For example installing any non-Python dependencies or adding any required
-   config settings.
 
 To install ckanext-galleryview:
 
@@ -70,17 +42,6 @@ To install ckanext-galleryview:
 4. Restart CKAN. For example if you've deployed CKAN with Apache on Ubuntu::
 
      sudo service apache2 reload
-
-
----------------
-Config Settings
----------------
-
-Document any optional config settings here. For example::
-
-    # The minimum number of hours to wait before re-checking a resource
-    # (optional, default: 24).
-    ckanext.galleryview.some_setting = some_default_value
 
 
 ------------------------
