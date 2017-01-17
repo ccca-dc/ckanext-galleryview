@@ -33,23 +33,20 @@ class UploadController(base.BaseController):
     def image_upload(self):
         filedata = request.POST.get('file-0')
         data_dict = request.POST.get('dict')
-        log.debug(pprint.pprint(data_dict))
+        resource_id = request.POST.get('resource_id')
         data_dict = ast.literal_eval(data_dict)
-        log.debug(pprint.pprint(data_dict))
         data_dict['file'] = filedata
-        resource_id = data_dict.get('resource_id')
-        upload = uploader.get_uploader('gallery/' + resource_id)
+        log.debug('gallery/' + resource_id + "/")
+        upload = uploader.get_uploader('gallery/' + resource_id + "/")
         upload.update_data_dict(data_dict, 'image_url',
                                 'file', 'clear_upload')
         upload.upload()
+        log.debug(pprint.pprint(data_dict))
 
     def image_delete(self):
         data_dict = request.POST.get('dict')
         data_dict = ast.literal_eval(data_dict)
         data_dict['clear_upload'] = "true"
-        log.debug(pprint.pprint(data_dict))
-        log.debug("------------------------")
-        log.debug(pprint.pprint(data_dict['image_url']))
         resource_id = data_dict.get('resource_id')
         image_url = data_dict.get('image_url')
         upload = uploader.get_uploader('gallery/' + resource_id)

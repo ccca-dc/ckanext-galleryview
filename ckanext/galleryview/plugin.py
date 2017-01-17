@@ -46,7 +46,6 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
         return 'gallery_view.html'
 
     def form_template(self, context, data_dict):
-        log.debug(data_dict)
         return 'gallery_form.html'
 
     def setup_template_variables(self, context, data_dict):
@@ -54,6 +53,7 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
 
         fields = data_dict['resource_view'].get('fields', '')
         image_names = data_dict['resource_view'].get('image_names', '')
+        resource_id = data_dict['resource']['id']
 
         fieldoutput = []
         imgs = []
@@ -67,7 +67,8 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
 
         tpl_variables = {
             'urls': fieldoutput,
-            'imgs': imgs
+            'imgs': imgs,
+            'resource_id': resource_id
         }
 
         return tpl_variables

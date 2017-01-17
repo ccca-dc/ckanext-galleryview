@@ -14,6 +14,7 @@ this.ckan.module('immediate-image-upload', function($, _) {
       upload_label: '',
       data_dict: '',
       count: '0',
+      resource_id: '',
       i18n: {
         upload: _('Upload'),
         url: _('Link'),
@@ -41,6 +42,7 @@ this.ckan.module('immediate-image-upload', function($, _) {
       var options = this.options;
       this.data_dict = options.data_dict;
       this.count = options.count;
+      this.resource_id = options.resource_id;
 
       // firstly setup the fields
       var field_upload = 'input[name="' + options.field_upload + '"]';
@@ -230,6 +232,7 @@ this.ckan.module('immediate-image-upload', function($, _) {
       });
 
       data.append('dict', this.data_dict);
+      data.append('resource_id', this.resource_id);
 
       $.ajax({
             url: '/image_upload',
