@@ -26,7 +26,11 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
                 'icon': 'picture',
                 'schema': {
                     'fields': [ignore_empty],
-                    'image_names': [ignore_empty]
+                    'image_names': [ignore_empty],
+                    'image_url': [ignore_empty],
+                    'image_upload': [ignore_empty],
+                    'clear_upload': [ignore_empty],
+                    'bla': 'bla',
                     },
                 'iframed': False,
                 'always_available': True,
@@ -67,3 +71,14 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
         }
 
         return tpl_variables
+
+    # IRoutes
+    def before_map(self, map):
+        # image upload
+        map.connect('image_upload', '/image_upload',
+                    controller='ckanext.galleryview.controllers.upload:UploadController',
+                    action='image_upload')
+        map.connect('image_delete', '/image_delete',
+                    controller='ckanext.galleryview.controllers.upload:UploadController',
+                    action='image_delete')
+        return map

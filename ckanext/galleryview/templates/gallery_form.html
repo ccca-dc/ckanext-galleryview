@@ -1,5 +1,9 @@
+{% import 'snippets/form.html' as form %}
+
 {% resource 'galleryview/edit_view.css' %}
 {% resource 'galleryview/create_input.js' %}
+
+<!--
 
 <div>
     <div class="control-group">
@@ -7,8 +11,8 @@
 		<div class="controls" id="profs">
             <form class="input-append">
                 <div id="field">
-					<!-- creating the first input with the add button here and checking whether there is already a url stored
-					 and when clicking the add button, it calls the create_input.js and creates additional inputs-->
+					 creating the first input with the add button here and checking whether there is already a url stored
+					 and when clicking the add button, it calls the create_input.js and creates additional inputs
 					{% set link = '' %}
 					{% set name = '' %}
 					{% if urls|length > 0 %}
@@ -24,10 +28,15 @@
         </div>
     </div>
 
-<!--inserting all urls that are already stored (by calling the create_input.js each time)
-except for the first stored url because it was already inserted above-->
+inserting all urls that are already stored (by calling the create_input.js each time)
+except for the first stored url because it was already inserted above
 {% for field in urls %}
 	{% if loop.index != 1 %}
 		<input type="text" disabled="disabled" style="display: none;" data-module="create_input" data-module-field="{{ field }}" data-module-imagename="{{ imgs[loop.index-1] }}"></input>
 	{% endif %}
 {% endfor %}
+-->
+
+{% set is_upload = data.image_url|length > 0 and not data.image_url.startswith('http') %}
+{% set is_url = data.image_url|length > 0 and data.image_url.startswith('http') %}
+{{ form.image_upload(data, errors, is_upload_enabled=true, is_url=is_url, is_upload=is_upload) }}
