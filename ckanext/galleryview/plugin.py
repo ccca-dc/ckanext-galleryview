@@ -30,7 +30,6 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
                     'image_url': [ignore_empty],
                     'image_upload': [ignore_empty],
                     'clear_upload': [ignore_empty],
-                    'bla': 'bla',
                     },
                 'iframed': False,
                 'always_available': True,

@@ -1,7 +1,8 @@
+"use strict";
 /* Image Upload
  *
  */
-this.ckan.module('immediate-image-upload', function($, _) {
+ckan.module('immediate-image-upload', function($, _) {
   return {
     /* options object can be extended using data-module-* attributes */
     options: {
@@ -37,6 +38,7 @@ this.ckan.module('immediate-image-upload', function($, _) {
      *
      * Returns nothing.
      */
+
     initialize: function () {
       $.proxyAll(this, /_on/);
       var options = this.options;
@@ -70,6 +72,7 @@ this.ckan.module('immediate-image-upload', function($, _) {
       //CHANGE
       this.field_clear = $('<input type="hidden" name="clear_upload">')
         .appendTo(this.el);
+      //this.field_clear.appendTo(this.el);
 
       // Button to set the field to be a URL
       this.button_url = $('<a href="javascript:;" class="btn"><i class="icon-globe"></i>'+this.i18n('url')+'</a>')
@@ -189,24 +192,24 @@ this.ckan.module('immediate-image-upload', function($, _) {
      * Returns nothing.
      */
     _onRemove: function() {
+      var data = new FormData();
+      data.append('dict', this.data_dict);
+
+      $.ajax({
+          url: '/image_delete',
+          data: data,
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'POST'
+      });
+
       this._showOnlyButtons();
 
       this.field_url_input.val('');
       this.field_url_input.prop('readonly', false);
 
       this.field_clear.val('true');
-
-      var data = new FormData();
-      data.append('dict', this.data_dict);
-
-      $.ajax({
-            url: '/image_delete',
-            data: data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            type: 'POST'
-        });
     },
 
     /* Event listener for when someone chooses a file to upload
@@ -214,6 +217,23 @@ this.ckan.module('immediate-image-upload', function($, _) {
      * Returns nothing.
      */
     _onInputChange: function() {
+      var data = new FormData();
+      jQuery.each(jQuery($('#field-image-upload'))[0].files, function(i, file) {
+        data.append('file-'+i, file);
+      });
+
+      data.append('dict', this.data_dict);
+      data.append('resource_id', this.resource_id);
+
+      $.ajax({
+          url: '/image_upload',
+          data: data,
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'POST'
+      });
+
       var file_name = this.input.val().split(/^C:\\fakepath\\/).pop();
       this.field_url_input.val(file_name);
       this.field_url_input.prop('readonly', true);
@@ -225,23 +245,6 @@ this.ckan.module('immediate-image-upload', function($, _) {
       this._autoName(file_name);
 
       this._updateUrlLabel(this.i18n('label_for_upload'));
-
-      var data = new FormData();
-      jQuery.each(jQuery($('#field-image-upload'))[0].files, function(i, file) {
-          data.append('file-'+i, file);
-      });
-
-      data.append('dict', this.data_dict);
-      data.append('resource_id', this.resource_id);
-
-      $.ajax({
-            url: '/image_upload',
-            data: data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            type: 'POST'
-        });
     },
 
     /* Show only the buttons, hiding all others
