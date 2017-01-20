@@ -14,7 +14,7 @@ ckan.module('immediate-image-upload', function($, _) {
       field_name: 'name',
       upload_label: '',
       data_dict: '',
-      count: '0',
+      count: 0,
       resource_id: '',
       i18n: {
         upload: _('Upload'),
@@ -218,7 +218,11 @@ ckan.module('immediate-image-upload', function($, _) {
      */
     _onInputChange: function() {
       var data = new FormData();
-      jQuery.each(jQuery($('#field-image-upload'))[0].files, function(i, file) {
+      jQuery.each(jQuery($('#field-image-upload' + this.count))[0].files, function(i, file) {
+        console.log(file);
+      });
+
+      jQuery.each(jQuery($('#field-image-upload' + this.count))[0].files, function(i, file) {
         data.append('file-'+i, file);
       });
 

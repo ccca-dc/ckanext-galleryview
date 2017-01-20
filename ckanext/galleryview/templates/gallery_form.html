@@ -37,7 +37,11 @@ except for the first stored url because it was already inserted above
 	{% endif %}
 {% endfor %}
 -->
-{% macro image_upload(data, resource_id, errors, field_url='image_url', field_upload='image_upload', field_clear='clear_upload',
+<!-- copied image_upload macro from form.html with
+        macro calls immediate-image-upload.js instead of image-upload.js and needs
+        resource_id and count as parameters as well
+-->
+{% macro image_upload(data, resource_id, errors, count, url_value, field_url='image_url', field_upload='image_upload', field_clear='clear_upload',
                       is_url=false, is_upload=false, is_upload_enabled=false, placeholder=false,
                       url_label='', upload_label='')  %}
   {% set placeholder = placeholder if placeholder else _('http://example.com/my-image.jpg') %}
@@ -46,13 +50,14 @@ except for the first stored url because it was already inserted above
 
   {% if is_upload_enabled %}
   <div class="image-upload" data-module="immediate-image-upload" data-module-is_url="{{ 'true' if is_url else 'false' }}" data-module-is_upload="{{ 'true' if is_upload else 'false' }}"
-       data-module-field_url="{{ field_url }}" data-module-field_upload="{{ field_upload }}" data-module-field_clear="{{ field_clear }}" data-module-upload_label="{{ upload_label }}" data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}">
+       data-module-field_url="{{ field_url }}" data-module-field_upload="{{ field_upload }}" data-module-field_clear="{{ field_clear }}" data-module-upload_label="{{ upload_label }}"
+       data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-count="{{ count }}">
   {% endif %}
 
-  {{ form.input(field_url, label=url_label, id='field-image-url', placeholder=placeholder, value=data.get(field_url), error=errors.get(field_url), classes=['control-full']) }}
+  {{ form.input(field_url, label=url_label, id='field-image-url', placeholder=placeholder, value=url_value, error=errors.get(field_url), classes=['control-full']) }}
 
   {% if is_upload_enabled %}
-    {{ form.input(field_upload, label=upload_label, id='field-image-upload', type='file', placeholder='', value='', error='', classes=['control-full']) }}
+    {{ form.input(field_upload, label=upload_label, id='field-image-upload' + count|string(), type='file', placeholder='', value='', error='', classes=['control-full']) }}
     {% if is_upload %}
       {{ form.checkbox(field_clear, label=_('Clear Upload'), id='field-clear-upload', value='true', error='', classes=['control-full']) }}
     {% endif %}
@@ -62,6 +67,14 @@ except for the first stored url because it was already inserted above
 
 {% endmacro %}
 
-{% set is_upload = data.image_url|length > 0 and not data.image_url.startswith('http') %}
-{% set is_url = data.image_url|length > 0 and data.image_url.startswith('http') %}
-{{ image_upload(data, resource_id, errors, is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
+{% set is_upload = image_urls[0]|length > 0 and not image_urls[0].startswith('http') %}
+{% set is_url = image_urls[0]|length > 0 and image_urls[0].startswith('http') %}
+{{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
+
+{% if image_urls|length > 1 %}
+    {% set is_upload = image_urls[1].startswith('http') %}
+    {% set is_url = image_urls[1] and image_urls[1].startswith('http') %}
+    {{ image_upload(data, resource_id, errors, 1, url_value=image_urls[1], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
+{% else %}
+    {{ image_upload(data, resource_id, errors, 1, url_value='', field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled()) }}
+{% endif %}
