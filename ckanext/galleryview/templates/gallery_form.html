@@ -39,7 +39,7 @@ except for the first stored url because it was already inserted above
 -->
 <!-- copied image_upload macro from form.html with
         macro calls immediate-image-upload.js instead of image-upload.js and needs
-        resource_id and count as parameters as well
+        resource_id, count and url_value as parameters as well
 -->
 {% macro image_upload(data, resource_id, errors, count, url_value, field_url='image_url', field_upload='image_upload', field_clear='clear_upload',
                       is_url=false, is_upload=false, is_upload_enabled=false, placeholder=false,
@@ -71,8 +71,8 @@ except for the first stored url because it was already inserted above
 {% set is_url = image_urls[0]|length > 0 and image_urls[0].startswith('http') %}
 {{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
 
-{% if image_urls|length > 1 %}
-    {% set is_upload = image_urls[1].startswith('http') %}
+{% if image_urls|length > 1 and image_urls[1]|length > 0 %}
+    {% set is_upload = not image_urls[1].startswith('http') %}
     {% set is_url = image_urls[1] and image_urls[1].startswith('http') %}
     {{ image_upload(data, resource_id, errors, 1, url_value=image_urls[1], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
 {% else %}

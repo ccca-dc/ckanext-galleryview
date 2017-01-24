@@ -11,3 +11,11 @@ input.input {
     width:40%;
     float:left;
 }
+
+input[name~=image_upload] {
+  cursor: pointer;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  filter: alpha(opacity=0);
+}

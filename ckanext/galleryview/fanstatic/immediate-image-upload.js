@@ -218,9 +218,6 @@ ckan.module('immediate-image-upload', function($, _) {
      */
     _onInputChange: function() {
       var data = new FormData();
-      jQuery.each(jQuery($('#field-image-upload' + this.count))[0].files, function(i, file) {
-        console.log(file);
-      });
 
       jQuery.each(jQuery($('#field-image-upload' + this.count))[0].files, function(i, file) {
         data.append('file-'+i, file);
@@ -239,7 +236,12 @@ ckan.module('immediate-image-upload', function($, _) {
       });
 
       var file_name = this.input.val().split(/^C:\\fakepath\\/).pop();
+
       this.field_url_input.val(file_name);
+
+      //new
+      this.input.val('');
+
       this.field_url_input.prop('readonly', true);
 
       this.field_clear.val('');
