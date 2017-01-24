@@ -36,24 +36,15 @@ class UploadController(base.BaseController):
         resource_id = request.POST.get('resource_id')
         data_dict = ast.literal_eval(data_dict)
         data_dict['file'] = filedata
-        log.debug(data_dict)
         upload = uploader.get_uploader('gallery/' + resource_id + "/")
         upload.update_data_dict(data_dict, 'image_url',
                                 'file', 'clear_upload')
         upload.upload()
-        log.debug(pprint.pprint(data_dict))
+        return data_dict['image_url']
 
     def image_delete(self):
-        data_dict = request.POST.get('dict')
-        data_dict = ast.literal_eval(data_dict)
-        data_dict['clear_upload'] = "true"
-        resource_id = data_dict.get('resource_id')
-        image_url = data_dict.get('image_url')
-        upload = uploader.get_uploader('gallery/' + resource_id)
-        upload.update_data_dict(data_dict, 'image_url',
-                                'file', 'clear_upload')
-        upload.upload()
+        resource_id = request.POST.get('resource_id')
+        image_url = request.POST.get('image_url')
         storage_path = config.get('ckan.storage_path')
-        file_path = storage_path + '/gallery/' + resource_id + '/' + image_url
-        log.debug(pprint.pprint(file_path))
+        file_path = storage_path + '/storage/uploads/gallery/' + resource_id + '/' + image_url
         os.remove(file_path)

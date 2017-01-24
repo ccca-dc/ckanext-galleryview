@@ -193,7 +193,9 @@ ckan.module('immediate-image-upload', function($, _) {
      */
     _onRemove: function() {
       var data = new FormData();
-      data.append('dict', this.data_dict);
+      data.append('image_url', this.field_url_input.val());
+      data.append('resource_id', this.resource_id);
+
 
       $.ajax({
           url: '/image_delete',
@@ -210,6 +212,7 @@ ckan.module('immediate-image-upload', function($, _) {
       this.field_url_input.prop('readonly', false);
 
       this.field_clear.val('true');
+      this.input.val('');
     },
 
     /* Event listener for when someone chooses a file to upload
@@ -226,23 +229,29 @@ ckan.module('immediate-image-upload', function($, _) {
       data.append('dict', this.data_dict);
       data.append('resource_id', this.resource_id);
 
+      var file_name = '';
+
       $.ajax({
           url: '/image_upload',
           data: data,
           cache: false,
           contentType: false,
           processData: false,
-          type: 'POST'
+          type: 'POST',
+          success: function(response){
+            file_name = response;
+        },
+        async: false
       });
 
-      var file_name = this.input.val().split(/^C:\\fakepath\\/).pop();
+      //var file_name = this.input.val().split(/^C:\\fakepath\\/).pop();
 
       this.field_url_input.val(file_name);
 
       //new
       this.input.val('');
 
-      this.field_url_input.prop('readonly', true);
+      //this.field_url_input.prop('readonly', true);
 
       this.field_clear.val('');
 
