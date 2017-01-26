@@ -66,7 +66,7 @@ except for the first stored url because it was already inserted above
   {% if is_upload_enabled %}</div>{% endif %}
 
 {% endmacro %}
-
+<!--
 {% set is_upload = image_urls[0]|length > 0 and not image_urls[0].startswith('http') %}
 {% set is_url = image_urls[0]|length > 0 and image_urls[0].startswith('http') %}
 {{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
@@ -77,4 +77,15 @@ except for the first stored url because it was already inserted above
     {{ image_upload(data, resource_id, errors, 1, url_value=image_urls[1], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
 {% else %}
     {{ image_upload(data, resource_id, errors, 1, url_value='', field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled()) }}
-{% endif %}
+{% endif %}-->
+<!--
+{% set is_upload = not image_urls[0].startswith('http') %}
+{% set is_url = image_urls[0] and image_urls[0].startswith('http') %}
+{{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=false, is_upload=false) }}
+-->
+
+<div id="masterdiv">
+    <button id="addbtn" data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
+         data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
+         data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" class="btn btn-success" type="button">+</button>
+</div>

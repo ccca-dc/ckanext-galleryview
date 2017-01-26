@@ -3,6 +3,7 @@
  *
  */
 ckan.module('immediate-image-upload', function($, _) {
+  var count = 0;
   return {
     /* options object can be extended using data-module-* attributes */
     options: {
@@ -14,7 +15,6 @@ ckan.module('immediate-image-upload', function($, _) {
       field_name: 'name',
       upload_label: '',
       data_dict: '',
-      count: 0,
       resource_id: '',
       i18n: {
         upload: _('Upload'),
@@ -43,8 +43,43 @@ ckan.module('immediate-image-upload', function($, _) {
       $.proxyAll(this, /_on/);
       var options = this.options;
       this.data_dict = options.data_dict;
-      this.count = options.count;
+      //this.count = options.count;
       this.resource_id = options.resource_id;
+      this.el.on('click', this._onClick);
+    },
+
+    _onClick: function(event) {
+      var options = this.options;
+      count = count + 1;
+
+      var sectionDiv = $('<div id="sectiondiv" class="image-upload">');
+
+      var controlGroupUrl = $('<div class="control-group control-full"></div>');
+      var controlLabelUrl = $('<label class="control-label" for="field-image-url">Image URL</label>');
+      var controlsUrl = $('<div class="controls"></div>');
+      var inputUrl = $('<input id="field-image-url" name="image_url" value="" placeholder="http://example.com/my-image.jpg" type="text"/>')
+
+      var controlGroupUpload = $('<div class="control-group control-full"></div>');
+      var controlLabelUpload = $('<label class="control-label" for="field-image-upload' + count + '">Image URL</label>');
+      var controlsUpload = $('<div class="controls"></div>');
+      var inputUpload = $('<input id="field-image-upload' + count + '" name="image_upload" value="" placeholder="" type="file"/>');
+
+      //var removeButton = $('<button id="remove-' + this.count + '" class="btn btn-danger remove-me" >-</button><div id="field"></div>');
+      // var uploadOrLink = $("#{{ image_upload(data, resource_id, errors, 0, url_value='', field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=true }}")
+      $("#masterdiv").append(sectionDiv);
+      sectionDiv.append(controlGroupUrl);
+
+      controlGroupUrl.append(controlLabelUrl);
+      controlGroupUrl.append(controlsUrl);
+      controlsUrl.append(inputUrl);
+
+      sectionDiv.append(controlGroupUpload);
+
+      controlGroupUpload.append(controlLabelUpload);
+      controlGroupUpload.append(controlsUpload);
+      controlsUpload.append(inputUpload);
+
+      //$("#masterdiv").append(removeButton);
 
       // firstly setup the fields
       var field_upload = 'input[name="' + options.field_upload + '"]';
@@ -52,18 +87,23 @@ ckan.module('immediate-image-upload', function($, _) {
       var field_clear = 'input[name="' + options.field_clear + '"]';
       var field_name = 'input[name="' + options.field_name + '"]';
 
-      this.input = $(field_upload, this.el);
-      this.field_url = $(field_url, this.el).parents('.control-group');
+      //this.input = $(field_upload, this.el);
+      this.input = $(field_upload, sectionDiv);
+      //this.field_url = $(field_url, this.el).parents('.control-group');
+      this.field_url = $(field_url, sectionDiv).parents('.control-group');
+      console.log(this.field_url);
       this.field_image = this.input.parents('.control-group');
       this.field_url_input = $('input', this.field_url);
-      this.field_name = this.el.parents('form').find(field_name);
+      //this.field_name = this.el.parents('form').find(field_name);
+      this.field_name = sectionDiv.parents('form').find(field_name);
       // this is the location for the upload/link data/image label
       this.label_location = $('label[for="field-image-url"]');
       // determines if the resource is a data resource
       this.is_data_resource = (this.options.field_url === 'url') && (this.options.field_upload === 'upload');
 
       // Is there a clear checkbox on the form already?
-      var checkbox = $(field_clear, this.el);
+      //var checkbox = $(field_clear, this.el);
+      var checkbox = $(field_clear, sectionDiv);
       if (checkbox.length > 0) {
         checkbox.parents('.control-group').remove();
       }
@@ -71,7 +111,7 @@ ckan.module('immediate-image-upload', function($, _) {
       // Adds the hidden clear input to the form
       //CHANGE
       this.field_clear = $('<input type="hidden" name="clear_upload">')
-        .appendTo(this.el);
+        .appendTo(sectionDiv);
       //this.field_clear.appendTo(this.el);
 
       // Button to set the field to be a URL
@@ -221,8 +261,8 @@ ckan.module('immediate-image-upload', function($, _) {
      */
     _onInputChange: function() {
       var data = new FormData();
-
-      jQuery.each(jQuery($('#field-image-upload' + this.count))[0].files, function(i, file) {
+      
+      jQuery.each(jQuery($('#field-image-upload' + count))[0].files, function(i, file) {
         data.append('file-'+i, file);
       });
 
