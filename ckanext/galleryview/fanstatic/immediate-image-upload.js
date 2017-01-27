@@ -3,7 +3,7 @@
  *
  */
 ckan.module('immediate-image-upload', function($, _) {
-  var count = 0;
+  var count = -1;
   return {
     /* options object can be extended using data-module-* attributes */
     options: {
@@ -16,6 +16,7 @@ ckan.module('immediate-image-upload', function($, _) {
       upload_label: '',
       data_dict: '',
       resource_id: '',
+      type: '',
       i18n: {
         upload: _('Upload'),
         url: _('Link'),
@@ -43,137 +44,173 @@ ckan.module('immediate-image-upload', function($, _) {
       $.proxyAll(this, /_on/);
       var options = this.options;
       this.data_dict = options.data_dict;
-      //this.count = options.count;
+      var type = options.type;
       this.resource_id = options.resource_id;
+
+      this.input = new Array();
+      this.field_url = new Array();
+      this.field_image = new Array();
+      this.label_location = new Array();
+      this.is_data_resource = new Array();
+      this.field_clear = new Array();
+      this.button_url = new Array();
+      this.button_upload = new Array();
+      this.field_name = new Array();
+      this.field_url_input = new Array();
+      this.fields = new Array();
+
       this.el.on('click', this._onClick);
+
+      if(type !== "button"){
+          this.createInput();
+      }
     },
 
     _onClick: function(event) {
-      var options = this.options;
-      count = count + 1;
+      this.createInput();
+    },
 
-      var sectionDiv = $('<div id="sectiondiv" class="image-upload">');
+    createInput: function () {
+        var options = this.options;
+        count = count + 1;
 
-      var controlGroupUrl = $('<div class="control-group control-full"></div>');
-      var controlLabelUrl = $('<label class="control-label" for="field-image-url">Image URL</label>');
-      var controlsUrl = $('<div class="controls"></div>');
-      var inputUrl = $('<input id="field-image-url" name="image_url" value="" placeholder="http://example.com/my-image.jpg" type="text"/>')
+        var sectionDiv = $('<div id="sectiondiv-' + count + '" class="image-upload">');
 
-      var controlGroupUpload = $('<div class="control-group control-full"></div>');
-      var controlLabelUpload = $('<label class="control-label" for="field-image-upload' + count + '">Image URL</label>');
-      var controlsUpload = $('<div class="controls"></div>');
-      var inputUpload = $('<input id="field-image-upload' + count + '" name="image_upload" value="" placeholder="" type="file"/>');
+        var controlGroupUrl = $('<div class="control-group control-full"></div>');
+        var controlsUrl = $('<div class="controls"></div>');
+        var inputUrl = $('<input id="field-image-url' + count + '" name="image_url" value="" placeholder="http://example.com/my-image.jpg" type="text"/>')
+        var controlLabelUrl = $('<label class="control-label" for="field-image-url">Image URL</label>');
 
-      //var removeButton = $('<button id="remove-' + this.count + '" class="btn btn-danger remove-me" >-</button><div id="field"></div>');
-      // var uploadOrLink = $("#{{ image_upload(data, resource_id, errors, 0, url_value='', field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=true }}")
-      $("#masterdiv").append(sectionDiv);
-      sectionDiv.append(controlGroupUrl);
+        var controlGroupUpload = $('<div class="control-group control-full"></div>');
+        var controlLabelUpload = $('<label class="control-label" for="field-image-upload">Image URL</label>');
+        var controlsUpload = $('<div class="controls"></div>');
+        var inputUpload = $('<input id="field-image-upload' + count + '" name="image_upload" value="" placeholder="" type="file"/>');
 
-      controlGroupUrl.append(controlLabelUrl);
-      controlGroupUrl.append(controlsUrl);
-      controlsUrl.append(inputUrl);
+        var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me" >-</button><div id="field"></div>');
 
-      sectionDiv.append(controlGroupUpload);
+        $("#masterdiv").append(sectionDiv);
+        sectionDiv.append(controlGroupUrl);
 
-      controlGroupUpload.append(controlLabelUpload);
-      controlGroupUpload.append(controlsUpload);
-      controlsUpload.append(inputUpload);
+        controlGroupUrl.append(controlLabelUrl);
+        controlGroupUrl.append(controlsUrl);
+        controlsUrl.append(inputUrl);
 
-      //$("#masterdiv").append(removeButton);
+        sectionDiv.append(controlGroupUpload);
 
-      // firstly setup the fields
-      var field_upload = 'input[name="' + options.field_upload + '"]';
-      var field_url = 'input[name="' + options.field_url + '"]';
-      var field_clear = 'input[name="' + options.field_clear + '"]';
-      var field_name = 'input[name="' + options.field_name + '"]';
+        controlGroupUpload.append(controlLabelUpload);
+        controlGroupUpload.append(controlsUpload);
+        controlsUpload.append(inputUpload);
 
-      //this.input = $(field_upload, this.el);
-      this.input = $(field_upload, sectionDiv);
-      //this.field_url = $(field_url, this.el).parents('.control-group');
-      this.field_url = $(field_url, sectionDiv).parents('.control-group');
-      console.log(this.field_url);
-      this.field_image = this.input.parents('.control-group');
-      this.field_url_input = $('input', this.field_url);
-      //this.field_name = this.el.parents('form').find(field_name);
-      this.field_name = sectionDiv.parents('form').find(field_name);
-      // this is the location for the upload/link data/image label
-      this.label_location = $('label[for="field-image-url"]');
-      // determines if the resource is a data resource
-      this.is_data_resource = (this.options.field_url === 'url') && (this.options.field_upload === 'upload');
+        $("#masterdiv").append(removeButton);
 
-      // Is there a clear checkbox on the form already?
-      //var checkbox = $(field_clear, this.el);
-      var checkbox = $(field_clear, sectionDiv);
-      if (checkbox.length > 0) {
-        checkbox.parents('.control-group').remove();
-      }
+            $('#remove-' + count).click(function(e){
+                e.preventDefault();
+                var fieldNum = this.id.substr(this.id.indexOf("-") + 1);
+                var fieldId = "#field" + fieldNum;
+                var sectionId = "#sectiondiv-" + fieldNum;
+                $(this).remove();
+                $(fieldId).remove();
+                //$(sectionId).remove();
+                sectionDiv.remove();
+            });
 
-      // Adds the hidden clear input to the form
-      //CHANGE
-      this.field_clear = $('<input type="hidden" name="clear_upload">')
-        .appendTo(sectionDiv);
-      //this.field_clear.appendTo(this.el);
+        // firstly setup the fields
+        var field_upload = 'input[name="' + options.field_upload + '"]';
+        var field_url = 'input[name="' + options.field_url + '"]';
+        var field_clear = 'input[name="' + options.field_clear + '"]';
+        var field_name = 'input[name="' + options.field_name + '"]';
 
-      // Button to set the field to be a URL
-      this.button_url = $('<a href="javascript:;" class="btn"><i class="icon-globe"></i>'+this.i18n('url')+'</a>')
-        .prop('title', this.i18n('url_tooltip'))
-        .on('click', this._onFromWeb)
-        .insertAfter(this.input);
+        //this.input = $(field_upload, this.el);
 
-      // Button to attach local file to the form
-      this.button_upload = $('<a href="javascript:;" class="btn"><i class="icon-cloud-upload"></i>'+this.i18n('upload')+'</a>')
-        .insertAfter(this.input);
+        this.input[count] = $(field_upload, sectionDiv);
+        //this.field_url = $(field_url, this.el).parents('.control-group');
+        this.field_url[count] = $(field_url, sectionDiv).parents('.control-group');
+        this.field_image[count] = this.input[count].parents('.control-group');
+        this.field_url_input[count] = $('input', this.field_url[count]);
+        //this.field_name = this.el.parents('form').find(field_name);
+        this.field_name[count] = sectionDiv.parents('form').find(field_name);
+        // this is the location for the upload/link data/image label
+        this.label_location[count] = $('label[for="field-image-url' + count + '"]');
+        // determines if the resource is a data resource
+        this.is_data_resource[count] = (this.options.field_url === 'url') && (this.options.field_upload === 'upload');
 
-      // Button for resetting the form when there is a URL set
-      $('<a href="javascript:;" class="btn btn-danger btn-remove-url">'+this.i18n('remove')+'</a>')
-        .prop('title', this.i18n('remove'))
-        .on('click', this._onRemove)
-        .insertBefore(this.field_url_input);
+        // Is there a clear checkbox on the form already?
+        //var checkbox = $(field_clear, this.el);
+        var checkbox = $(field_clear, sectionDiv);
+        if (checkbox.length > 0) {
+          checkbox.parents('.control-group').remove();
+        }
+        // Adds the hidden clear input to the form
+        //CHANGE
+        this.field_clear[count] = $('<input type="hidden" name="clear_upload">')
+          .appendTo(sectionDiv);
+        //this.field_clear.appendTo(this.el);
 
-      // Update the main label (this is displayed when no data/image has been uploaded/linked)
-      $('label[for="field-image-upload"]').text(options.upload_label || this.i18n('upload_label'));
+        // Button to set the field to be a URL
+        this.button_url[count] = $('<a href="javascript:;" class="btn"><i class="icon-globe"></i>'+this.i18n('url')+'</a>')
+          .prop('title', this.i18n('url_tooltip'))
+          .on('click', this._onFromWeb)
+          .insertAfter(this.input[count]);
 
-      // Setup the file input
-      this.input
-        .on('mouseover', this._onInputMouseOver)
-        .on('mouseout', this._onInputMouseOut)
-        .on('change', this._onInputChange)
-        .prop('title', this.i18n('upload_tooltip'))
-        .css('width', this.button_upload.outerWidth());
 
-      // Fields storage. Used in this.changeState
-      this.fields = $('<i />')
-        .add(this.button_upload)
-        .add(this.button_url)
-        .add(this.input)
-        .add(this.field_url)
-        .add(this.field_image);
+        // Button to attach local file to the form
+        this.button_upload[count] = $('<a href="javascript:;" class="btn"><i class="icon-cloud-upload"></i>'+this.i18n('upload')+'</a>')
+          .insertAfter(this.input[count]);
 
-      // Disables autoName if user modifies name field
-      this.field_name
-        .on('change', this._onModifyName);
-      // Disables autoName if resource name already has value,
-      // i.e. we on edit page
-      if (this.field_name.val()){
-        this._nameIsDirty = true;
-      }
+        // Button for resetting the form when there is a URL set
+        $('<a href="javascript:;" class="btn btn-danger btn-remove-url" id="remove-upload-' + count + '">'+this.i18n('remove')+'</a>')
+          .prop('title', this.i18n('remove'))
+          .on('click', this._onRemove)
+          .insertBefore(this.field_url_input[count]);
 
-      if (options.is_url) {
-        this._showOnlyFieldUrl();
 
-        this._updateUrlLabel(this.i18n('label_for_url'));
-      } else if (options.is_upload) {
-        this._showOnlyFieldUrl();
+        // Update the main label (this is displayed when no data/image has been uploaded/linked)
+        $('label[for="field-image-upload' + count + '"]').text(options.upload_label || this.i18n('upload_label'));
 
-        this.field_url_input.prop('readonly', true);
-        // If the data is an uploaded file, the filename will display rather than whole url of the site
-        var filename = this._fileNameFromUpload(this.field_url_input.val());
-        this.field_url_input.val(filename);
 
-        this._updateUrlLabel(this.i18n('label_for_upload'));
-      } else {
-        this._showOnlyButtons();
-      }
+        // Setup the file input
+        this.input[count]
+          .on('mouseover', this._onInputMouseOver)
+          .on('mouseout', this._onInputMouseOut)
+          .on('change', this._onInputChange)
+          .prop('title', this.i18n('upload_tooltip'))
+          .css('width', this.button_upload[count].outerWidth());
+
+
+        // Fields storage. Used in this.changeState
+        this.fields[count] = $('<i />')
+          .add(this.button_upload[count])
+          .add(this.button_url[count])
+          .add(this.input[count])
+          .add(this.field_url[count])
+          .add(this.field_image[count]);
+
+        // Disables autoName if user modifies name field
+        this.field_name[count]
+          .on('change', this._onModifyName);
+        // Disables autoName if resource name already has value,
+        // i.e. we on edit page
+        if (this.field_name[count].val()){
+          this._nameIsDirty = true;
+        }
+
+        if (options.is_url) {
+          this._showOnlyFieldUrl();
+
+          this._updateUrlLabel(this.i18n('label_for_url'));
+        } else if (options.is_upload) {
+          this._showOnlyFieldUrl();
+
+          this.field_url_input[count].prop('readonly', true);
+          // If the data is an uploaded file, the filename will display rather than whole url of the site
+          var filename = this._fileNameFromUpload(this.field_url_input[count].val());
+          this.field_url_input[count].val(filename);
+
+          this._updateUrlLabel(this.i18n('label_for_upload'));
+        } else {
+          this._showOnlyButtons(count);
+        }
+
     },
 
     /* Quick way of getting just the filename from the uri of the resource data
@@ -202,12 +239,12 @@ ckan.module('immediate-image-upload', function($, _) {
      *
      * Returns nothing.
      */
-    _updateUrlLabel: function(label_text) {
-      if (! this.is_data_resource) {
+    _updateUrlLabel: function(label_text, id) {
+      if (! this.is_data_resource[id]) {
         return;
       }
 
-      this.label_location.text(label_text);
+      this.label_location[id].text(label_text);
     },
 
     /* Event listener for when someone sets the field to URL mode
@@ -217,11 +254,11 @@ ckan.module('immediate-image-upload', function($, _) {
     _onFromWeb: function() {
       this._showOnlyFieldUrl();
 
-      this.field_url_input.focus()
+      this.field_url_input[count].focus()
         .on('blur', this._onFromWebBlur);
 
       if (this.options.is_upload) {
-        this.field_clear.val('true');
+        this.field_clear[count].val('true');
       }
 
       this._updateUrlLabel(this.i18n('label_for_url'));
@@ -231,9 +268,11 @@ ckan.module('immediate-image-upload', function($, _) {
      *
      * Returns nothing.
      */
-    _onRemove: function() {
+    _onRemove: function(event) {
+      var id = parseInt(event.target.id.slice(-1));
+
       var data = new FormData();
-      data.append('image_url', this.field_url_input.val());
+      data.append('image_url', this.field_url_input[id].val());
       data.append('resource_id', this.resource_id);
 
 
@@ -246,25 +285,30 @@ ckan.module('immediate-image-upload', function($, _) {
           type: 'POST'
       });
 
-      this._showOnlyButtons();
+      this._showOnlyButtons(id);
 
-      this.field_url_input.val('');
-      this.field_url_input.prop('readonly', false);
+      this.field_url_input[id].val('');
+      this.field_url_input[id].prop('readonly', false);
 
-      this.field_clear.val('true');
-      this.input.val('');
+      this.field_clear[id].val('true');
+      this.input[id].val('');
     },
 
     /* Event listener for when someone chooses a file to upload
      *
      * Returns nothing.
      */
-    _onInputChange: function() {
+    _onInputChange: function(event) {
+      var id = parseInt(event.target.id.slice(-1));
       var data = new FormData();
-      
-      jQuery.each(jQuery($('#field-image-upload' + count))[0].files, function(i, file) {
+
+      jQuery.each(this.input[id][0].files, function(i, file) {
         data.append('file-'+i, file);
       });
+      /*
+      jQuery.each(jQuery($('#field-image-upload' + count))[0].files, function(i, file) {
+        data.append('file-'+i, file);
+      });*/
 
       data.append('dict', this.data_dict);
       data.append('resource_id', this.resource_id);
@@ -286,32 +330,32 @@ ckan.module('immediate-image-upload', function($, _) {
 
       //var file_name = this.input.val().split(/^C:\\fakepath\\/).pop();
 
-      this.field_url_input.val(file_name);
+      this.field_url_input[id].val(file_name);
 
       //new
-      this.input.val('');
+      this.input[id].val('');
 
-      //this.field_url_input.prop('readonly', true);
+      this.field_url_input[id].prop('readonly', true);
 
-      this.field_clear.val('');
+      this.field_clear[id].val('');
 
-      this._showOnlyFieldUrl();
+      this._showOnlyFieldUrl(id);
 
-      this._autoName(file_name);
+      this._autoName(file_name, id);
 
-      this._updateUrlLabel(this.i18n('label_for_upload'));
+      this._updateUrlLabel(this.i18n('label_for_upload'), id);
     },
 
     /* Show only the buttons, hiding all others
      *
      * Returns nothing.
      */
-    _showOnlyButtons: function() {
-      this.fields.hide();
-      this.button_upload
-        .add(this.field_image)
-        .add(this.button_url)
-        .add(this.input)
+    _showOnlyButtons: function(id) {
+      this.fields[id].hide();
+      this.button_upload[id]
+        .add(this.field_image[id])
+        .add(this.button_url[id])
+        .add(this.input[id])
         .show();
     },
 
@@ -319,25 +363,27 @@ ckan.module('immediate-image-upload', function($, _) {
      *
      * Returns nothing.
      */
-    _showOnlyFieldUrl: function() {
-      this.fields.hide();
-      this.field_url.show();
+    _showOnlyFieldUrl: function(id) {
+      this.fields[id].hide();
+      this.field_url[id].show();
     },
 
     /* Event listener for when a user mouseovers the hidden file input
      *
      * Returns nothing.
      */
-    _onInputMouseOver: function() {
-      this.button_upload.addClass('hover');
+    _onInputMouseOver: function(event) {
+      var id = parseInt(event.target.id.slice(-1));
+      this.button_upload[id].addClass('hover');
     },
 
     /* Event listener for when a user mouseouts the hidden file input
      *
      * Returns nothing.
      */
-    _onInputMouseOut: function() {
-      this.button_upload.removeClass('hover');
+    _onInputMouseOut: function(event) {
+      var id = parseInt(event.target.id.slice(-1));
+      this.button_upload[id].removeClass('hover');
     },
 
     /* Event listener for changes in resource's name by direct input from user
@@ -353,7 +399,7 @@ ckan.module('immediate-image-upload', function($, _) {
      * Returns nothing
      */
     _onFromWebBlur: function() {
-      var url = this.field_url_input.val().match(/([^\/]+)\/?$/)
+      var url = this.field_url_input[count].val().match(/([^\/]+)\/?$/)
       if (url) {
         this._autoName(url.pop());
       }
@@ -364,9 +410,9 @@ ckan.module('immediate-image-upload', function($, _) {
      * Select by attribute [name] to be on the safe side and allow to change field id
      * Returns nothing
      */
-     _autoName: function(name) {
+     _autoName: function(name, id) {
         if (!this._nameIsDirty){
-          this.field_name.val(name);
+          this.field_name[id].val(name);
         }
      }
   };

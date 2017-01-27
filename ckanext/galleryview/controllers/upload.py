@@ -36,6 +36,8 @@ class UploadController(base.BaseController):
         resource_id = request.POST.get('resource_id')
         data_dict = ast.literal_eval(data_dict)
         data_dict['file'] = filedata
+        data_dict['image_url'] = ''
+        data_dict['clear_upload'] = ''
         upload = uploader.get_uploader('gallery/' + resource_id + "/")
         upload.update_data_dict(data_dict, 'image_url',
                                 'file', 'clear_upload')
