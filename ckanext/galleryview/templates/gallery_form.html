@@ -5,30 +5,6 @@
 {% resource 'galleryview/immediate-image-upload.js' %}
 
 <!--
-
-<div>
-    <div class="control-group">
-        <label class="control-label" for="field1">{{ _('Image url') }}</label>
-		<div class="controls" id="profs">
-            <form class="input-append">
-                <div id="field">
-					 creating the first input with the add button here and checking whether there is already a url stored
-					 and when clicking the add button, it calls the create_input.js and creates additional inputs
-					{% set link = '' %}
-					{% set name = '' %}
-					{% if urls|length > 0 %}
-						{% set link = urls[0] %}
-						{% set name = imgs[0] %}
-					{% endif %}
-					<input autocomplete="off" class="input" id="field1" name="fields" type="text" placeholder="link eg. http://example.com/image.jpg" value="{{ link }}" />
-					<input autocomplete="off" class="input" id="image_name1" name="image_names" type="text" placeholder="name of the image" value="{{ name }}"/>
-					<button id="addbtn" data-module="create_input" data-module-field="button" class="btn btn-success" type="button">+</button>
-                    <div id="field"></div>
-				</div>
-            </form>
-        </div>
-    </div>
-
 inserting all urls that are already stored (by calling the create_input.js each time)
 except for the first stored url because it was already inserted above
 {% for field in urls %}
@@ -70,19 +46,20 @@ except for the first stored url because it was already inserted above
 {% set is_upload = image_urls[0]|length > 0 and not image_urls[0].startswith('http') %}
 {% set is_url = image_urls[0]|length > 0 and image_urls[0].startswith('http') %}
 {{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
-
-{% if image_urls|length > 1 and image_urls[1]|length > 0 %}
-    {% set is_upload = not image_urls[1].startswith('http') %}
-    {% set is_url = image_urls[1] and image_urls[1].startswith('http') %}
-    {{ image_upload(data, resource_id, errors, 1, url_value=image_urls[1], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
-{% else %}
-    {{ image_upload(data, resource_id, errors, 1, url_value='', field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled()) }}
-{% endif %}-->
+-->
 <!--
 {% set is_upload = not image_urls[0].startswith('http') %}
 {% set is_url = image_urls[0] and image_urls[0].startswith('http') %}
 {{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=false, is_upload=false) }}
--->
+
+
+{% for image_url in image_urls %}
+    {% set is_upload = not image_url.startswith('http') %}
+    {% set is_url = image_url.startswith('http') %}
+    <div data-module="immediate-image-upload" data-module-is_url="{{ is_url }}" data-module-is_upload="{{ is_upload }}"
+         data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
+         data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div"></div>
+{% endfor %}-->
 
 <div id="masterdiv">
     <button id="addbtn" data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"

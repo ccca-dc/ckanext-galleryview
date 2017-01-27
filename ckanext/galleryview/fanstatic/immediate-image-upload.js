@@ -44,6 +44,8 @@ ckan.module('immediate-image-upload', function($, _) {
       $.proxyAll(this, /_on/);
       var options = this.options;
       this.data_dict = options.data_dict;
+      this.is_url = options.is_url;
+      this.is_upload = options.is_upload;
       var type = options.type;
       this.resource_id = options.resource_id;
 
@@ -86,7 +88,10 @@ ckan.module('immediate-image-upload', function($, _) {
         var controlsUpload = $('<div class="controls"></div>');
         var inputUpload = $('<input id="field-image-upload' + count + '" name="image_upload" value="" placeholder="" type="file"/>');
 
-        var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me" >-</button><div id="field"></div>');
+        var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me" name="remove-button">-</button><div id="field"></div>');
+
+        var inputName = $('<input id="field-name' + count + '" name="field-name" value="" placeholder="name of the image" type="text"/>')
+        var controlLabelName = $('<label class="control-label" for="field-name">Image Name</label>');
 
         $("#masterdiv").append(sectionDiv);
         sectionDiv.append(controlGroupUrl);
@@ -101,19 +106,19 @@ ckan.module('immediate-image-upload', function($, _) {
         controlGroupUpload.append(controlsUpload);
         controlsUpload.append(inputUpload);
 
-        $("#masterdiv").append(removeButton);
+        sectionDiv.append(controlLabelName);
+        sectionDiv.append(inputName);
+        sectionDiv.append(removeButton);
 
             $('#remove-' + count).click(function(e){
                 e.preventDefault();
                 var fieldNum = this.id.substr(this.id.indexOf("-") + 1);
-                var fieldId = "#field" + fieldNum;
                 var sectionId = "#sectiondiv-" + fieldNum;
-                $(this).remove();
-                $(fieldId).remove();
                 //$(sectionId).remove();
                 sectionDiv.remove();
             });
 
+        //image-upload code with a few changes
         // firstly setup the fields
         var field_upload = 'input[name="' + options.field_upload + '"]';
         var field_url = 'input[name="' + options.field_url + '"]';
@@ -147,7 +152,7 @@ ckan.module('immediate-image-upload', function($, _) {
         //this.field_clear.appendTo(this.el);
 
         // Button to set the field to be a URL
-        this.button_url[count] = $('<a href="javascript:;" class="btn"><i class="icon-globe"></i>'+this.i18n('url')+'</a>')
+        this.button_url[count] = $('<a href="javascript:;" class="btn" id="url-' + count + '"><i class="icon-globe"></i>'+this.i18n('url')+'</a>')
           .prop('title', this.i18n('url_tooltip'))
           .on('click', this._onFromWeb)
           .insertAfter(this.input[count]);
@@ -251,17 +256,18 @@ ckan.module('immediate-image-upload', function($, _) {
      *
      * Returns nothing.
      */
-    _onFromWeb: function() {
-      this._showOnlyFieldUrl();
+    _onFromWeb: function(event) {
+      var id = parseInt(event.target.id.slice(-1));
+      this._showOnlyFieldUrl(id);
 
-      this.field_url_input[count].focus()
+      this.field_url_input[id].focus()
         .on('blur', this._onFromWebBlur);
 
       if (this.options.is_upload) {
-        this.field_clear[count].val('true');
+        this.field_clear[id].val('true');
       }
 
-      this._updateUrlLabel(this.i18n('label_for_url'));
+      this._updateUrlLabel(this.i18n('label_for_url'), id);
     },
 
     /* Event listener for resetting the field back to the blank state
@@ -398,10 +404,11 @@ ckan.module('immediate-image-upload', function($, _) {
      *
      * Returns nothing
      */
-    _onFromWebBlur: function() {
-      var url = this.field_url_input[count].val().match(/([^\/]+)\/?$/)
+    _onFromWebBlur: function(event) {
+      var id = parseInt(event.target.id.slice(-1));
+      var url = this.field_url_input[id].val().match(/([^\/]+)\/?$/)
       if (url) {
-        this._autoName(url.pop());
+        this._autoName(url.pop(), id);
       }
     },
 

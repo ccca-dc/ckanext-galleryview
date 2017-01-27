@@ -13,9 +13,18 @@ input.input {
 }
 
 input[name~=image_upload] {
-  cursor: pointer;
-  position: absolute;
-  z-index: 1;
-  opacity: 0;
-  filter: alpha(opacity=0);
+    cursor: pointer;
+    position: absolute;
+    z-index: 1;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+input[name~=field-name]{
+    margin-left:10px;
+    margin-right:10px;
+    margin-bottom:20px;
+}
+button[name~=remove-button]{
+    margin-bottom:20px;
 }
