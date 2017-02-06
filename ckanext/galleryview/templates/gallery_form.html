@@ -1,74 +1,21 @@
-{% import 'macros/form.html' as form %}
-
 {% resource 'galleryview/edit_view.css' %}
-{% resource 'galleryview/create_input.js' %}
 {% resource 'galleryview/immediate-image-upload.js' %}
 
-<!--
-inserting all urls that are already stored (by calling the create_input.js each time)
-except for the first stored url because it was already inserted above
-{% for field in urls %}
-	{% if loop.index != 1 %}
-		<input type="text" disabled="disabled" style="display: none;" data-module="create_input" data-module-field="{{ field }}" data-module-imagename="{{ imgs[loop.index-1] }}"></input>
-	{% endif %}
-{% endfor %}
--->
-<!-- copied image_upload macro from form.html with
-        macro calls immediate-image-upload.js instead of image-upload.js and needs
-        resource_id, count and url_value as parameters as well
--->
-{% macro image_upload(data, resource_id, errors, count, url_value, field_url='image_url', field_upload='image_upload', field_clear='clear_upload',
-                      is_url=false, is_upload=false, is_upload_enabled=false, placeholder=false,
-                      url_label='', upload_label='')  %}
-  {% set placeholder = placeholder if placeholder else _('http://example.com/my-image.jpg') %}
-  {% set url_label = url_label or _('Image URL')  %}
-  {% set upload_label = upload_label or _('Image')  %}
-
-  {% if is_upload_enabled %}
-  <div class="image-upload" data-module="immediate-image-upload" data-module-is_url="{{ 'true' if is_url else 'false' }}" data-module-is_upload="{{ 'true' if is_upload else 'false' }}"
-       data-module-field_url="{{ field_url }}" data-module-field_upload="{{ field_upload }}" data-module-field_clear="{{ field_clear }}" data-module-upload_label="{{ upload_label }}"
-       data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-count="{{ count }}">
-  {% endif %}
-
-  {{ form.input(field_url, label=url_label, id='field-image-url', placeholder=placeholder, value=url_value, error=errors.get(field_url), classes=['control-full']) }}
-
-  {% if is_upload_enabled %}
-    {{ form.input(field_upload, label=upload_label, id='field-image-upload' + count|string(), type='file', placeholder='', value='', error='', classes=['control-full']) }}
-    {% if is_upload %}
-      {{ form.checkbox(field_clear, label=_('Clear Upload'), id='field-clear-upload', value='true', error='', classes=['control-full']) }}
-    {% endif %}
-  {% endif %}
-
-  {% if is_upload_enabled %}</div>{% endif %}
-
-{% endmacro %}
-<!--
-{% set is_upload = image_urls[0]|length > 0 and not image_urls[0].startswith('http') %}
-{% set is_url = image_urls[0]|length > 0 and image_urls[0].startswith('http') %}
-{{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
-
-
-{% set is_upload = not image_urls[0].startswith('http') %}
-{% set is_url = image_urls[0] and image_urls[0].startswith('http') %}
-{{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=false, is_upload=false) }}
--->
-
 <div id="masterdiv">
+    {% for image_url in image_urls %}
+        {% if image_url|length > 0 %}
+            {% set is_upload = not image_url.startswith('http') %}
+            {% set is_url = image_url.startswith('http') %}
+            <div data-module="immediate-image-upload" data-module-is_url="{{ 'true' if is_url else 'false' }}" data-module-is_upload="{{ 'true' if is_upload else 'false' }}"
+                 data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label="{{ image_url }}"
+                 data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
+        {% else %}
+            <div data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
+                 data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
+                 data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
+        {% endif %}
+    {% endfor %}
     <button id="addbtn" data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
          data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
-         data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="button" class="btn btn-success" type="button">+</button>
+         data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="button" class="btn btn-success" type="button">Add Image</button>
 </div>
-
-{% for image_url in image_urls %}
-    {% if image_url|length > 0 %}
-        {% set is_upload = not image_url.startswith('http') %}
-        {% set is_url = image_url.startswith('http') %}
-        <div data-module="immediate-image-upload" data-module-is_url="{{ is_url }}" data-module-is_upload="{{ is_upload }}"
-             data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label="{{ image_url }}"
-             data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
-    {% else %}
-        <div data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
-             data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
-             data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
-    {% endif %}
-{% endfor %}

@@ -1,7 +1,6 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import logging
-import pprint
 from pylons import config
 
 log = logging.getLogger(__name__)
@@ -26,13 +25,11 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
                 'title': plugins.toolkit._('Gallery'),
                 'icon': 'picture',
                 'schema': {
-                    'fields': [ignore_empty],
                     'image_names': [ignore_empty],
                     'image_url': [ignore_empty],
                     'image_upload': [ignore_empty],
                     'clear_upload': [ignore_empty],
                     'field-name': [ignore_empty],
-                    'remove-button': [ignore_empty],
                     },
                 'iframed': False,
                 'always_available': True,
@@ -52,21 +49,8 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
 
     def setup_template_variables(self, context, data_dict):
         """Setup variables available to templates"""
-
-        fields = data_dict['resource_view'].get('fields', '')
         image_names = data_dict['resource_view'].get('image_names', '')
         resource_id = data_dict['resource']['id']
-
-        fieldoutput = []
-        imgs = []
-
-        if type(fields) is list:
-            fieldoutput = fields
-            # imgs = image_names
-        else:
-            fieldoutput.append(fields)
-            # imgs.append(image_names)
-
         image_urls = data_dict['resource_view'].get('image_url', '')
         image_uploads = data_dict['resource_view'].get('image_upload', '')
         clear_uploads = data_dict['resource_view'].get('clear_upload', '')
@@ -88,7 +72,6 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
             imgs.append(image_names)
 
         tpl_variables = {
-            'urls': fieldoutput,
             'image_names': imgs,
             'resource_id': resource_id,
             'image_urls': urls,

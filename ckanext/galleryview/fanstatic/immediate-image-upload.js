@@ -45,8 +45,6 @@ ckan.module('immediate-image-upload', function($, _) {
       $.proxyAll(this, /_on/);
       var options = this.options;
       this.data_dict = options.data_dict;
-      this.is_url = options.is_url;
-      this.is_upload = options.is_upload;
       var type = options.type;
       this.resource_id = options.resource_id;
       this.upload_label = options.upload_label;
@@ -73,6 +71,8 @@ ckan.module('immediate-image-upload', function($, _) {
 
       this.el.on('click', this._onClick);
 
+      /* createInput should be called from div, when creating the div
+      and from button, when it is clicked */
       if(type != "button"){
           this.createInput();
       }
@@ -88,6 +88,8 @@ ckan.module('immediate-image-upload', function($, _) {
         var options = this.options;
         count = count + 1;
 
+        // inserting all fields that are inserted in the image_upload macro in form.html
+
         var sectionDiv = $('<div id="sectiondiv-' + count + '" class="image-upload">');
 
         var controlGroupUrl = $('<div class="control-group control-full"></div>');
@@ -100,7 +102,7 @@ ckan.module('immediate-image-upload', function($, _) {
         var controlsUpload = $('<div class="controls"></div>');
         var inputUpload = $('<input id="field-image-upload' + count + '" name="image_upload" value="" placeholder="" type="file"/>');
 
-        var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me" name="remove-button">-</button><div id="field"></div>');
+        var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me remove">-</button><div id="field"></div>');
 
         var inputName = $('<input id="field-name' + count + '" name="image_names" value="' + this.image_name + '" placeholder="name of the image" type="text"/>')
         var controlLabelName = $('<label class="control-label" for="field-name">Image Name</label>');
@@ -122,14 +124,11 @@ ckan.module('immediate-image-upload', function($, _) {
         sectionDiv.append(inputName);
         sectionDiv.append(removeButton);
 
-        $('#remove-' + count).click(function(e){
-            e.preventDefault();
-            var fieldNum = this.id.substr(this.id.indexOf("-") + 1);
-            var sectionId = "#sectiondiv-" + fieldNum;
-            //$(sectionId).remove();
-            //this.removeUploadedPicture(fieldNum);
-            sectionDiv.remove();
-        });
+        //$("#masterdiv").remove($("#addbtn"));
+        //$("#addbtn").remove();
+        $("#masterdiv").append($("#addbtn"));
+
+        // fields from image-upload macro end here
 
         //image-upload code with a few changes
         // firstly setup the fields
@@ -138,22 +137,15 @@ ckan.module('immediate-image-upload', function($, _) {
         var field_clear = 'input[name="' + options.field_clear + '"]';
         var field_name = 'input[name="' + options.field_name + '"]';
 
-        //this.input = $(field_upload, this.el);
-
         this.input[count] = $(field_upload, sectionDiv);
-        //this.field_url = $(field_url, this.el).parents('.control-group');
         this.field_url[count] = $(field_url, sectionDiv).parents('.control-group');
         this.field_image[count] = this.input[count].parents('.control-group');
         this.field_url_input[count] = $('input', this.field_url[count]);
-        //this.field_name = this.el.parents('form').find(field_name);
         this.field_name[count] = sectionDiv.parents('form').find(field_name);
-        // this is the location for the upload/link data/image label
         this.label_location[count] = $('label[for="field-image-url' + count + '"]');
-        // determines if the resource is a data resource
         this.is_data_resource[count] = (this.options.field_url === 'url') && (this.options.field_upload === 'upload');
 
         // Is there a clear checkbox on the form already?
-        //var checkbox = $(field_clear, this.el);
         var checkbox = $(field_clear, sectionDiv);
         if (checkbox.length > 0) {
           checkbox.parents('.control-group').remove();
@@ -162,7 +154,6 @@ ckan.module('immediate-image-upload', function($, _) {
         //CHANGE
         this.field_clear[count] = $('<input type="hidden" name="clear_upload">')
           .appendTo(sectionDiv);
-        //this.field_clear.appendTo(this.el);
 
         // Button to set the field to be a URL
         this.button_url[count] = $('<a href="javascript:;" class="btn" id="url-' + count + '"><i class="icon-globe"></i>'+this.i18n('url')+'</a>')
@@ -229,6 +220,34 @@ ckan.module('immediate-image-upload', function($, _) {
           this._showOnlyButtons(count);
         }
 
+        //on click event for removing the whole section
+
+        var field_url_input = this.field_url_input;
+        var resource_id = this.resource_id;
+
+        $('#remove-' + count).click(function(e){
+            e.preventDefault();
+            var id = this.id.substr(this.id.indexOf("-") + 1);
+            sectionDiv.remove();
+
+            var image_url = field_url_input[id].val();
+
+            if(image_url.length > 24 && image_url.startsWith("http") == false){
+                var data = new FormData();
+                data.append('image_url', image_url);
+                data.append('resource_id', resource_id);
+
+                $.ajax({
+                    url: '/image_delete',
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    type: 'POST'
+                });
+            }
+        });
+
     },
 
     /* Quick way of getting just the filename from the uri of the resource data
@@ -289,8 +308,18 @@ ckan.module('immediate-image-upload', function($, _) {
      */
     _onRemove: function(event) {
       var id = parseInt(event.target.id.slice(-1));
+      var data = new FormData();
+      data.append('image_url', this.field_url_input[id].val());
+      data.append('resource_id', this.resource_id);
 
-      this.removeUploadedPicture(id);
+      $.ajax({
+          url: '/image_delete',
+          data: data,
+          cache: false,
+          contentType: false,
+          processData: false,
+          type: 'POST'
+      });
 
       this._showOnlyButtons(id);
 
@@ -301,20 +330,6 @@ ckan.module('immediate-image-upload', function($, _) {
       this.input[id].val('');
     },
 
-    removeUploadedPicture: function(id) {
-        var data = new FormData();
-        data.append('image_url', this.field_url_input[id].val());
-        data.append('resource_id', this.resource_id);
-
-        $.ajax({
-            url: '/image_delete',
-            data: data,
-            cache: false,
-            contentType: false,
-            processData: false,
-            type: 'POST'
-        });
-    },
 
     /* Event listener for when someone chooses a file to upload
      *
