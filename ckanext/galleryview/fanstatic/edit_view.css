@@ -20,7 +20,7 @@ input[name~=image_upload] {
     filter: alpha(opacity=0);
 }
 
-input[name~=field-name]{
+input[name~=image_names]{
     margin-left:10px;
     margin-right:10px;
     margin-bottom:20px;

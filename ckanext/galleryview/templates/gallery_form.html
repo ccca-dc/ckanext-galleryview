@@ -46,26 +46,32 @@ except for the first stored url because it was already inserted above
 {% set is_upload = image_urls[0]|length > 0 and not image_urls[0].startswith('http') %}
 {% set is_url = image_urls[0]|length > 0 and image_urls[0].startswith('http') %}
 {{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=is_url, is_upload=is_upload) }}
--->
-<!--
+
+
 {% set is_upload = not image_urls[0].startswith('http') %}
 {% set is_url = image_urls[0] and image_urls[0].startswith('http') %}
 {{ image_upload(data, resource_id, errors, 0, url_value=image_urls[0], field_url='image_url', field_upload='image_upload', field_clear='clear_upload', is_upload_enabled=h.uploads_enabled(), is_url=false, is_upload=false) }}
-
-
-{% for image_url in image_urls %}
-    {% set is_upload = not image_url.startswith('http') %}
-    {% set is_url = image_url.startswith('http') %}
-    <div data-module="immediate-image-upload" data-module-is_url="{{ is_url }}" data-module-is_upload="{{ is_upload }}"
-         data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
-         data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div"></div>
-{% endfor %}-->
+-->
 
 <div id="masterdiv">
     <button id="addbtn" data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
          data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
          data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="button" class="btn btn-success" type="button">+</button>
-     <div data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
+    <!-- <div data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
           data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
-          data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div"></div>
+          data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name=""></div>-->
 </div>
+
+{% for image_url in image_urls %}
+    {% if image_url|length > 0 %}
+        {% set is_upload = not image_url.startswith('http') %}
+        {% set is_url = image_url.startswith('http') %}
+        <div data-module="immediate-image-upload" data-module-is_url="{{ is_url }}" data-module-is_upload="{{ is_upload }}"
+             data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label="{{ image_url }}"
+             data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
+    {% else %}
+        <div data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
+             data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
+             data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
+    {% endif %}
+{% endfor %}

@@ -30,6 +30,8 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
                     'image_url': [ignore_empty],
                     'image_upload': [ignore_empty],
                     'clear_upload': [ignore_empty],
+                    'field-name': [ignore_empty],
+                    'remove-button': [ignore_empty],
                     },
                 'iframed': False,
                 'always_available': True,
@@ -59,10 +61,10 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
 
         if type(fields) is list:
             fieldoutput = fields
-            imgs = image_names
+            # imgs = image_names
         else:
             fieldoutput.append(fields)
-            imgs.append(image_names)
+            # imgs.append(image_names)
 
         image_urls = data_dict['resource_view'].get('image_url', '')
         image_uploads = data_dict['resource_view'].get('image_upload', '')
@@ -71,23 +73,27 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
         urls = []
         uploads = []
         clears = []
+        imgs = []
 
         if type(image_urls) is list:
             urls = image_urls
             uploads = image_uploads
             clears = clear_uploads
+            imgs = image_names
         else:
             urls.append(image_urls)
             uploads.append(image_uploads)
             clears.append(clear_uploads)
+            imgs.append(image_names)
 
         tpl_variables = {
             'urls': fieldoutput,
-            'imgs': imgs,
+            'image_names': imgs,
             'resource_id': resource_id,
             'image_urls': urls,
             'image_uploads': uploads,
-            'clear_uploads': clears
+            'clear_uploads': clears,
+            'imgs': ''
         }
 
         return tpl_variables
