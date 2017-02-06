@@ -2,6 +2,7 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import logging
 import pprint
+from pylons import config
 
 log = logging.getLogger(__name__)
 
@@ -93,7 +94,6 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
             'image_urls': urls,
             'image_uploads': uploads,
             'clear_uploads': clears,
-            'imgs': ''
         }
 
         return tpl_variables

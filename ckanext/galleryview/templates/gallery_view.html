@@ -2,7 +2,7 @@
 
 {% block page %}
     {% if urls %}
-        {% snippet 'snippets/gallery.html', images=urls, image_names=imgs, resource_id=resource_id %}
+        {% snippet 'snippets/gallery.html', images=image_urls, image_names=image_names, resource_id=resource_id %}
     {% else %}
         <div class="row">
             <p>No images found matching these criteria.</p>

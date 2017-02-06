@@ -6,15 +6,22 @@
         <div class="row">
         {% for image in images %}
             <div class="col-xs-3 gallery-item" width="200">
-                <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
-                    <img src="{{ image }}" class="img-responsive img-gallery" alt="">
-                </a>
                 {% if image.startswith('http') %}
+                    <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
+                        <img src="{{ image }}" class="img-responsive img-gallery" alt="">
+                    </a>
                     <a target="_blank" href="{{ image }}">
                         <p class="imagename">{{ image_names[loop.index-1] }}</p>
                     </a>
-                {% else %}
+                {% elif image|length == 0 %}
                     <p class="imagename">{{ image_names[loop.index-1] }}</p>
+                {% else %}
+                    <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
+                        <img src="/uploads/gallery/{{ resource_id }}/{{ image }}" class="img-responsive img-gallery" alt="">
+                    </a>
+                    <a target="_blank" href="/uploads/gallery/{{ resource_id }}/{{ image }}">
+                        <p class="imagename">{{ image_names[loop.index-1] }}</p>
+                    </a>
                 {% endif %}
             </div>
         {% endfor %}

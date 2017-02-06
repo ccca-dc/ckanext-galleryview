@@ -48,5 +48,6 @@ class UploadController(base.BaseController):
         resource_id = request.POST.get('resource_id')
         image_url = request.POST.get('image_url')
         storage_path = config.get('ckan.storage_path')
+        log.debug(storage_path)
         file_path = storage_path + '/storage/uploads/gallery/' + resource_id + '/' + image_url
         os.remove(file_path)
