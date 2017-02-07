@@ -1,7 +1,7 @@
 {% extends "dataviewer/base.html" %}
 
 {% block page %}
-    {% if urls %}
+    {% if image_urls %}
         {% snippet 'snippets/gallery.html', images=image_urls, image_names=image_names, resource_id=resource_id %}
     {% else %}
         <div class="row">
