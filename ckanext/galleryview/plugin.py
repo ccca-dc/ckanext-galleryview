@@ -25,7 +25,7 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
                 'title': plugins.toolkit._('Gallery'),
                 'icon': 'picture',
                 'schema': {
-                    'image_names': [ignore_empty],
+                    'image_name': [ignore_empty],
                     'image_url': [ignore_empty],
                     'image_upload': [ignore_empty],
                     'clear_upload': [ignore_empty],
@@ -49,7 +49,7 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
 
     def setup_template_variables(self, context, data_dict):
         """Setup variables available to templates"""
-        image_names = data_dict['resource_view'].get('image_names', '')
+        image_names = data_dict['resource_view'].get('image_name', '')
         resource_id = data_dict['resource']['id']
         image_urls = data_dict['resource_view'].get('image_url', '')
         image_uploads = data_dict['resource_view'].get('image_upload', '')

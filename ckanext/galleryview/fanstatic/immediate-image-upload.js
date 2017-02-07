@@ -98,13 +98,13 @@ ckan.module('immediate-image-upload', function($, _) {
         var controlLabelUrl = $('<label class="control-label" for="field-image-url">Image URL</label>');
 
         var controlGroupUpload = $('<div class="control-group control-full"></div>');
-        var controlLabelUpload = $('<label class="control-label" for="field-image-upload">Image URL</label>');
+        var controlLabelUpload = $('<label class="control-label" for="field-image-upload">Image</label>');
         var controlsUpload = $('<div class="controls"></div>');
         var inputUpload = $('<input id="field-image-upload' + count + '" name="image_upload" value="" placeholder="" type="file"/>');
 
         var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me remove">-</button><div id="field"></div>');
 
-        var inputName = $('<input id="field-name' + count + '" name="image_names" value="' + this.image_name + '" placeholder="name of the image" type="text"/>')
+        var inputName = $('<input id="field-name' + count + '" name="image_name" value="' + this.image_name + '" placeholder="name of the image" type="text"/>')
         var controlLabelName = $('<label class="control-label" for="field-name">Image Name</label>');
 
         $("#masterdiv").append(sectionDiv);
@@ -124,8 +124,6 @@ ckan.module('immediate-image-upload', function($, _) {
         sectionDiv.append(inputName);
         sectionDiv.append(removeButton);
 
-        //$("#masterdiv").remove($("#addbtn"));
-        //$("#addbtn").remove();
         $("#masterdiv").append($("#addbtn"));
 
         // fields from image-upload macro end here
