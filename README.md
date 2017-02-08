@@ -7,8 +7,7 @@ This extension creates a resource view and lets you add a gallery to any
 resource you have pictures for. Therefore you you can add pictures to a
 resource without having them uploaded as resource.
 
-Currently the gallery view can only add URLs like the default image_view from
-CKAN. However it is planned to implement uploading pictures in a later version.
+In the gallery view you can either upload your pictures or state the URLs.
 
 ![Gallery View](doc/img/gallery_form.png)
 
@@ -35,7 +34,7 @@ To install ckanext-galleryview:
 
      pip install ckanext-galleryview
 
-3. Add ``galleryview`` to the ``ckan.plugins`` setting in your CKAN
+3. Add ``gallery_view`` to the ``ckan.plugins`` setting in your CKAN
    config file (by default the config file is located at
    ``/etc/ckan/default/production.ini``).
 
