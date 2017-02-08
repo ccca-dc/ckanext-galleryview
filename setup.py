@@ -80,7 +80,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points='''
         [ckan.plugins]
-        galleryview=ckanext.galleryview.plugin:GalleryviewPlugin
+        gallery_view=ckanext.galleryview.plugin:GalleryviewPlugin
 
         [babel.extractors]
         ckan = ckan.lib.extract:extract_ckan

@@ -39,7 +39,7 @@ class TestGalleryView(object):
         app = ckan.config.middleware.make_app(config['global_conf'], **config)
         cls.app = paste.fixture.TestApp(app)
 
-        ckan.plugins.load('galleryview')
+        ckan.plugins.load('gallery_view')
 
         cls.dataset = factories.Dataset()
         cls.resource = factories.Resource(package_id=cls.dataset['id'])
@@ -54,7 +54,7 @@ class TestGalleryView(object):
                                   'title': 'Gallery Test View',
                                   'description': 'A nice test view',
                                   'image_url': ['http://some.image.png', '2017-02-07-084856.486186logo.png', '', 'http://different.image.png'],
-                                  'image_name': ['', '', 'test image', '']}
+                                  'image_name': ['', '', 'test image', 'different image']}
 
         cls.resource_view = ckan.plugins.toolkit.get_action('resource_view_create')(
             cls.context, cls.resource_view_dict)
@@ -67,7 +67,7 @@ class TestGalleryView(object):
         # We have to unload the plugin we loaded, so it doesn't affect any
         # tests that run after ours.
         model.repo.rebuild_db()
-        ckan.plugins.unload('galleryview')
+        ckan.plugins.unload('gallery_view')
 
     def test_view_shown_in_resource_view_list(self):
         resource_view_list = tests.call_action_api(self.app,
@@ -142,7 +142,8 @@ class TestGalleryView(object):
         assert_true(self.resource_view_dict['image_url'][3] in response)
         assert_true(">some.image.png<" in response)
         assert_true(">logo.png<" in response)
-        assert_true(">test image<" in response)
+        assert_true(">different image<" in response)
+        assert_true(">test image<" not in response)
 
         url = url_for(controller='package', action='edit_view',
                       id=self.dataset['name'], resource_id=self.resource['id'],
