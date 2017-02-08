@@ -33,6 +33,8 @@ class TestGalleryView(object):
         '''Nose runs this method once to setup our test class.'''
         # Test code should use CKAN's plugins.load() function to load plugins
         # to be tested.
+        model.repo.rebuild_db()
+
         config['ckan.views.default_views'] = ('')
         app = ckan.config.middleware.make_app(config['global_conf'], **config)
         cls.app = paste.fixture.TestApp(app)
@@ -51,8 +53,8 @@ class TestGalleryView(object):
                                   'view_type': 'gallery_view',
                                   'title': 'Gallery Test View',
                                   'description': 'A nice test view',
-                                  'fields': ['http://some.image.png', 'another.image', '', 'http://different.image.png'],
-                                  'image_names': ['some', 'another', 'test image', '']}
+                                  'image_url': ['http://some.image.png', '2017-02-07-084856.486186logo.png', '', 'http://different.image.png'],
+                                  'image_name': ['', '', 'test image', '']}
 
         cls.resource_view = ckan.plugins.toolkit.get_action('resource_view_create')(
             cls.context, cls.resource_view_dict)
@@ -82,8 +84,8 @@ class TestGalleryView(object):
                                               id=self.resource_view['id'],
                                               apikey=self.sysadmin['apikey'])
 
-        assert_equal(self.resource_view_dict['fields'],
-                     resource_view['fields'])
+        assert_equal(self.resource_view_dict['image_url'],
+                     resource_view['image_url'])
         assert_equal(resource_view['title'], 'Gallery Test View')
         assert_equal(resource_view['description'], 'A nice test view')
         assert_equal(resource_view['view_type'], 'gallery_view')
@@ -93,8 +95,8 @@ class TestGalleryView(object):
                                   'view_type': 'gallery_view',
                                   'title': 'Test View',
                                   'description': 'A nice test view',
-                                  'fields': '',
-                                  'image_names': ''}
+                                  'image_url': '',
+                                  'image_name': ''}
 
         resource_view = tests.call_action_api(self.app,
                                               'resource_view_create',
@@ -107,15 +109,15 @@ class TestGalleryView(object):
                                                    apikey=self.sysadmin['apikey'])
 
         with assert_raises(KeyError):
-            resource_view_show['fields']
+            resource_view_show['image_url']
 
     def test_view_update(self):
         resource_view_dict = {'resource_id': self.resource['id'],
                               'view_type': 'gallery_view',
                               'title': 'Gallery Test View',
                               'description': 'A nice test view',
-                              'fields': ['http://some.image.png', 'another.image', 'http://test.image.png'],
-                              'image_names': ['some', 'another', 'test image']}
+                              'image_url': ['http://some.image.png', 'another.image', 'http://test.image.png'],
+                              'image_name': ['some', 'another', 'test image']}
 
         tests.call_action_api(self.app,
                               'resource_view_update',
@@ -127,19 +129,20 @@ class TestGalleryView(object):
                       id=self.dataset['name'], resource_id=self.resource['id'])
         response = self.app.get(url)
 
-        assert_true(self.resource_view_dict['fields'][3] not in response)
-        assert_true(resource_view_dict['fields'][2] in response)
+        assert_true(self.resource_view_dict['image_url'][3] not in response)
+        assert_true(resource_view_dict['image_url'][2] in response)
 
     def test_gallery_view_html(self):
         url = url_for(controller='package', action='resource_read',
                       id=self.dataset['name'], resource_id=self.resource['id'])
         response = self.app.get(url)
 
-        assert_true(self.resource_view_dict['fields'][0] in response)
-        assert_true(self.resource_view_dict['image_names'][0] in response)
-        assert_true(self.resource_view_dict['fields'][1] in response)
-        assert_true(self.resource_view_dict['fields'][3] in response)
-        assert_true(self.resource_view_dict['fields'][2] in response)
+        assert_true(self.resource_view_dict['image_url'][0] in response)
+        assert_true(self.resource_view_dict['image_url'][1] in response)
+        assert_true(self.resource_view_dict['image_url'][3] in response)
+        assert_true(">some.image.png<" in response)
+        assert_true(">logo.png<" in response)
+        assert_true(">test image<" in response)
 
         url = url_for(controller='package', action='edit_view',
                       id=self.dataset['name'], resource_id=self.resource['id'],

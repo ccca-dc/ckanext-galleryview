@@ -5,18 +5,37 @@
     <div class="container">
         <div class="row">
         {% for image in images %}
-            <div class="col-xs-3 gallery-item" width="200">
-                <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
-                    <img src="{{ image }}" class="img-responsive img-gallery" alt="">
-                </a>
-                {% if image.startswith('http') %}
-                    <a target="_blank" href="{{ image }}">
-                        <p class="imagename">{{ image_names[loop.index-1] }}</p>
-                    </a>
-                {% else %}
-                    <p class="imagename">{{ image_names[loop.index-1] }}</p>
-                {% endif %}
-            </div>
+            {% set image_name = image_names[loop.index-1] %}
+            {% if image|length > 0 %}
+                <div class="col-xs-3 gallery-item" width="200">
+                    {% if image.startswith('http') %}
+                        <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
+                            <img src="{{ image }}" class="img-responsive img-gallery" alt="">
+                        </a>
+                        <!-- displays image_name as link -->
+                        <a target="_blank" href="{{ image }}">
+                            {% if image_name|length > 0 %}
+                                <p class="imagename">{{ image_name }}</p>
+                            {% else %}
+                                <!-- if no image name is given, it takes the part of the url after the last / as displayed name -->
+                                <p class="imagename">{{ image.split('/')[-1] }}</p>
+                            {% endif %}
+                        </a>
+                    {% elif image|length > 24 %}
+                        <a href="#galleryImg1" class="link-gallery" data-toggle="modal" data-target="#modalGallery">
+                            <img src="/uploads/gallery/{{ resource_id }}/{{ image }}" class="img-responsive img-gallery" alt="">
+                        </a>
+                        <a target="_blank" href="/uploads/gallery/{{ resource_id }}/{{ image }}">
+                            {% if image_name|length > 0 %}
+                                <p class="imagename">{{ image_name }}</p>
+                            {% else %}
+                                <!-- if no image name is given, it takes the name of the uploaded file without the timestamp -->
+                                <p class="imagename">{{ image[24:100] }}</p>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% endfor %}
         </div> <!--/.row  -->
     </div> <!-- /.container -->

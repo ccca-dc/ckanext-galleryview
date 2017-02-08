@@ -1,33 +1,21 @@
 {% resource 'galleryview/edit_view.css' %}
-{% resource 'galleryview/create_input.js' %}
+{% resource 'galleryview/immediate-image-upload.js' %}
 
-<div>
-    <div class="control-group">
-        <label class="control-label" for="field1">{{ _('Image url') }}</label>
-		<div class="controls" id="profs">
-            <form class="input-append">
-                <div id="field">
-					<!-- creating the first input with the add button here and checking whether there is already a url stored
-					 and when clicking the add button, it calls the create_input.js and creates additional inputs-->
-					{% set link = '' %}
-					{% set name = '' %}
-					{% if urls|length > 0 %}
-						{% set link = urls[0] %}
-						{% set name = imgs[0] %}
-					{% endif %}
-					<input autocomplete="off" class="input" id="field1" name="fields" type="text" placeholder="link eg. http://example.com/image.jpg" value="{{ link }}" />
-					<input autocomplete="off" class="input" id="image_name1" name="image_names" type="text" placeholder="name of the image" value="{{ name }}"/>
-					<button id="addbtn" data-module="create_input" data-module-field="button" class="btn btn-success" type="button">+</button>
-                    <div id="field"></div>
-				</div>
-            </form>
-        </div>
-    </div>
-
-<!--inserting all urls that are already stored (by calling the create_input.js each time)
-except for the first stored url because it was already inserted above-->
-{% for field in urls %}
-	{% if loop.index != 1 %}
-		<input type="text" disabled="disabled" style="display: none;" data-module="create_input" data-module-field="{{ field }}" data-module-imagename="{{ imgs[loop.index-1] }}"></input>
-	{% endif %}
-{% endfor %}
+<div id="masterdiv">
+    {% for image_url in image_urls %}
+        {% if image_url|length > 0 %}
+            {% set is_upload = not image_url.startswith('http') %}
+            {% set is_url = image_url.startswith('http') %}
+            <div data-module="immediate-image-upload" data-module-is_url="{{ 'true' if is_url else 'false' }}" data-module-is_upload="{{ 'true' if is_upload else 'false' }}"
+                 data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label="{{ image_url }}"
+                 data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
+        {% else %}
+            <div data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
+                 data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
+                 data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="div" data-module-image_name="{{ image_names[loop.index-1]}}"></div>
+        {% endif %}
+    {% endfor %}
+    <button id="addbtn" data-module="immediate-image-upload" data-module-is_url="false" data-module-is_upload="false"
+         data-module-field_url="image_url" data-module-field_upload="image_upload" data-module-field_clear="clear_upload" data-module-upload_label=""
+         data-module-data_dict="{{ data }}" data-module-resource_id="{{ resource_id }}" data-module-type="button" class="btn btn-success" type="button">Add Image</button>
+</div>

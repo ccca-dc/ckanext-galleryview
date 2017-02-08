@@ -1,7 +1,7 @@
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 import logging
-import pprint
+from pylons import config
 
 log = logging.getLogger(__name__)
 
@@ -25,8 +25,11 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
                 'title': plugins.toolkit._('Gallery'),
                 'icon': 'picture',
                 'schema': {
-                    'fields': [ignore_empty],
-                    'image_names': [ignore_empty]
+                    'image_name': [ignore_empty],
+                    'image_url': [ignore_empty],
+                    'image_upload': [ignore_empty],
+                    'clear_upload': [ignore_empty],
+                    'field-name': [ignore_empty],
                     },
                 'iframed': False,
                 'always_available': True,
@@ -42,28 +45,49 @@ class GalleryviewPlugin(plugins.SingletonPlugin):
         return 'gallery_view.html'
 
     def form_template(self, context, data_dict):
-        log.debug(data_dict)
         return 'gallery_form.html'
 
     def setup_template_variables(self, context, data_dict):
         """Setup variables available to templates"""
+        image_names = data_dict['resource_view'].get('image_name', '')
+        resource_id = data_dict['resource']['id']
+        image_urls = data_dict['resource_view'].get('image_url', '')
+        image_uploads = data_dict['resource_view'].get('image_upload', '')
+        clear_uploads = data_dict['resource_view'].get('clear_upload', '')
 
-        fields = data_dict['resource_view'].get('fields', '')
-        image_names = data_dict['resource_view'].get('image_names', '')
-
-        fieldoutput = []
+        urls = []
+        uploads = []
+        clears = []
         imgs = []
 
-        if type(fields) is list:
-            fieldoutput = fields
+        if type(image_urls) is list:
+            urls = image_urls
+            uploads = image_uploads
+            clears = clear_uploads
             imgs = image_names
         else:
-            fieldoutput.append(fields)
+            urls.append(image_urls)
+            uploads.append(image_uploads)
+            clears.append(clear_uploads)
             imgs.append(image_names)
 
         tpl_variables = {
-            'urls': fieldoutput,
-            'imgs': imgs
+            'image_names': imgs,
+            'resource_id': resource_id,
+            'image_urls': urls,
+            'image_uploads': uploads,
+            'clear_uploads': clears,
         }
 
         return tpl_variables
+
+    # IRoutes
+    def before_map(self, map):
+        # image upload
+        map.connect('image_upload', '/image_upload',
+                    controller='ckanext.galleryview.controllers.upload:UploadController',
+                    action='image_upload')
+        map.connect('image_delete', '/image_delete',
+                    controller='ckanext.galleryview.controllers.upload:UploadController',
+                    action='image_delete')
+        return map
