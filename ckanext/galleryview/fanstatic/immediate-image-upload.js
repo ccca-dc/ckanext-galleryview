@@ -102,7 +102,7 @@ ckan.module('immediate-image-upload', function($, _) {
         var controlsUpload = $('<div class="controls"></div>');
         var inputUpload = $('<input id="field-image-upload' + count + '" name="image_upload" value="" placeholder="" type="file"/>');
 
-        var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me remove">-</button><div id="field"></div>');
+        var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me remove" type="button">-</button><div id="field"></div>');
 
         var inputName = $('<input id="field-name' + count + '" name="image_name" value="' + this.image_name + '" placeholder="name of the image" type="text"/>')
         var controlLabelName = $('<label class="control-label" for="field-name">Image Name</label>');
