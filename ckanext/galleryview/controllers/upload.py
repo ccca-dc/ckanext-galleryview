@@ -55,14 +55,14 @@ class UploadController(base.BaseController):
 
         context = {'model': model, 'session': model.Session,
                    'user': c.user}
-
         try:
             check_access('resource_view_update', context, {'id': resource_id})
         except NotAuthorized:
             abort(403, _('Unauthorized to delete image'))
 
-        if "/" not in image_url:
-            storage_path = config.get('ckan.storage_path')
-            log.debug(storage_path)
-            file_path = storage_path + '/storage/uploads/gallery/' + resource_id + '/' + image_url
-            os.remove(file_path)
+        storage_path = config.get('ckan.storage_path')
+        file_path = storage_path + '/storage/uploads/gallery/' + resource_id
+        images_stored = os.listdir(file_path)
+
+        if image_url in images_stored:
+            os.remove(file_path + '/' + image_url)
