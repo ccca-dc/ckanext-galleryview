@@ -17,13 +17,18 @@ import ckan.lib.uploader as uploader
 import pprint
 import ast
 import ckan.lib.navl.dictization_functions as dict_fns
+from ckan.common import OrderedDict, c, g, request, _
 
 get_action = logic.get_action
 parse_params = logic.parse_params
 tuplize_dict = logic.tuplize_dict
 clean_dict = logic.clean_dict
+NotAuthorized = logic.NotAuthorized
+abort = base.abort
 
-c = base.c
+check_access = logic.check_access
+
+# c = base.c
 request = base.request
 log = logging.getLogger(__name__)
 
@@ -47,7 +52,17 @@ class UploadController(base.BaseController):
     def image_delete(self):
         resource_id = request.POST.get('resource_id')
         image_url = request.POST.get('image_url')
-        storage_path = config.get('ckan.storage_path')
-        log.debug(storage_path)
-        file_path = storage_path + '/storage/uploads/gallery/' + resource_id + '/' + image_url
-        os.remove(file_path)
+
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+
+        try:
+            check_access('resource_view_update', context, {'id': resource_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to delete image'))
+
+        if "/" not in image_url:
+            storage_path = config.get('ckan.storage_path')
+            log.debug(storage_path)
+            file_path = storage_path + '/storage/uploads/gallery/' + resource_id + '/' + image_url
+            os.remove(file_path)
