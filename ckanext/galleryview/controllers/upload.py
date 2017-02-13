@@ -39,7 +39,15 @@ class UploadController(base.BaseController):
         filedata = request.POST.get('file-0')
         data_dict = request.POST.get('dict')
         resource_id = request.POST.get('resource_id')
-        data_dict = ast.literal_eval(data_dict)
+
+        context = {'model': model, 'session': model.Session,
+                   'user': c.user}
+        try:
+            check_access('resource_view_update', context, {'id': resource_id})
+        except NotAuthorized:
+            abort(403, _('Unauthorized to upload image'))
+
+        data_dict = {}
         data_dict['file'] = filedata
         data_dict['image_url'] = ''
         data_dict['clear_upload'] = ''

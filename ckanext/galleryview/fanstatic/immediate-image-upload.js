@@ -14,7 +14,6 @@ ckan.module('immediate-image-upload', function($, _) {
       field_clear: 'clear_upload',
       field_name: 'name',
       upload_label: '',
-      data_dict: '',
       resource_id: '',
       type: '',
       image_name: '',
@@ -44,7 +43,6 @@ ckan.module('immediate-image-upload', function($, _) {
     initialize: function () {
       $.proxyAll(this, /_on/);
       var options = this.options;
-      this.data_dict = options.data_dict;
       var type = options.type;
       this.resource_id = options.resource_id;
       this.upload_label = options.upload_label;
@@ -345,7 +343,6 @@ ckan.module('immediate-image-upload', function($, _) {
         data.append('file-'+i, file);
       });*/
 
-      data.append('dict', this.data_dict);
       data.append('resource_id', this.resource_id);
 
       var file_name = '';
