@@ -24,6 +24,7 @@ parse_params = logic.parse_params
 tuplize_dict = logic.tuplize_dict
 clean_dict = logic.clean_dict
 NotAuthorized = logic.NotAuthorized
+ValidationError = logic.ValidationError
 abort = base.abort
 
 check_access = logic.check_access
@@ -52,10 +53,14 @@ class UploadController(base.BaseController):
         data_dict['image_url'] = ''
         data_dict['clear_upload'] = ''
         upload = uploader.get_uploader('gallery/' + resource_id + "/")
-        upload.update_data_dict(data_dict, 'image_url',
-                                'file', 'clear_upload')
-        upload.upload()
-        return data_dict['image_url']
+        try:
+            upload.update_data_dict(data_dict, 'image_url',
+                                    'file', 'clear_upload')
+            upload.upload()
+
+            return data_dict['image_url']
+        except ValidationError:
+            pass
 
     def image_delete(self):
         resource_id = request.POST.get('resource_id')

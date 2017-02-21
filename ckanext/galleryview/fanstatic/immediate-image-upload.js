@@ -362,20 +362,23 @@ ckan.module('immediate-image-upload', function($, _) {
 
       //var file_name = this.input.val().split(/^C:\\fakepath\\/).pop();
 
-      this.field_url_input[id].val(file_name);
+      if (file_name != ''){
+          this.field_url_input[id].val(file_name);
 
-      //new
+          this.field_url_input[id].prop('readonly', true);
+
+          this.field_clear[id].val('');
+
+          this._showOnlyFieldUrl(id);
+
+          this._autoName(file_name, id);
+
+          this._updateUrlLabel(this.i18n('label_for_upload'), id);
+      } else {
+          alert("File is too large");
+      }
+
       this.input[id].val('');
-
-      this.field_url_input[id].prop('readonly', true);
-
-      this.field_clear[id].val('');
-
-      this._showOnlyFieldUrl(id);
-
-      this._autoName(file_name, id);
-
-      this._updateUrlLabel(this.i18n('label_for_upload'), id);
     },
 
     /* Show only the buttons, hiding all others
