@@ -21,7 +21,6 @@ input[name~=image_upload] {
 }
 
 input[name~=image_name]{
-    margin-left:10px;
     margin-right:10px;
     margin-bottom:20px;
 }
@@ -35,4 +34,50 @@ input[name~=image_name]{
 
 .remove {
     margin-bottom:20px;
+}
+
+input[name~=image_url]{
+  padding-right: 29px;
+}
+input[name~=image_url]{
+    display: inline-block;
+    width: 91.66666667% !important;
+}
+input[name~=image_upload] {
+  cursor: pointer;
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+.js .immediate-image-upload .controls {
+  position: relative;
+}
+.js .immediate-image-upload .btn {
+  position: relative;
+  top: 0;
+  margin-right: 10px;
+}
+.js .immediate-image-upload .btn.hover {
+  color: #333333;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
+}
+.js .immediate-image-upload .btn-remove-url {
+  position: absolute;
+  margin-right: 0;
+  top: 4px;
+  right: 5px;
+  padding: 0 4px;
+  -webkit-border-radius: 100px;
+  -moz-border-radius: 100px;
+  border-radius: 100px;
+}
+.js .immediate-image-upload .btn-remove-url .icon-remove {
+  margin-right: 0;
 }

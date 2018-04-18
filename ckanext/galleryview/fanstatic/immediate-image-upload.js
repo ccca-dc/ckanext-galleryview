@@ -102,8 +102,11 @@ ckan.module('immediate-image-upload', function($, _) {
 
         var removeButton = $('<button id="remove-' + count + '" class="btn btn-danger remove-me remove" type="button">-</button><div id="field"></div>');
 
-        var inputName = $('<input id="field-name' + count + '" name="image_name" value="' + this.image_name + '" placeholder="name of the image" type="text"/>')
+        var inputName = $('<input id="field-name' + count + '" name="image_name" value="' + this.image_name + '" placeholder="name of the image" type="text" class="form-control"/>')
         var controlLabelName = $('<label class="control-label" for="field-name">Image Name</label>');
+
+        var controls2 = $('<div class="controls"></div>');
+        var controlGroupUpload2 = $('<div class="control-group control-full"></div>');
 
         $("#masterdiv").append(sectionDiv);
         sectionDiv.append(controlGroupUrl);
@@ -118,9 +121,11 @@ ckan.module('immediate-image-upload', function($, _) {
         controlGroupUpload.append(controlsUpload);
         controlsUpload.append(inputUpload);
 
-        sectionDiv.append(controlLabelName);
-        sectionDiv.append(inputName);
-        sectionDiv.append(removeButton);
+        sectionDiv.append(controlGroupUpload2);
+        controlGroupUpload2.append(controlLabelName);
+        controlGroupUpload2.append(controls2);
+        controls2.append(inputName);
+        controls2.append(removeButton);
 
         $("#masterdiv").append($("#addbtn"));
 
